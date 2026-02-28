@@ -19,7 +19,7 @@ logger = structlog.get_logger()
 router = APIRouter()
 
 # TODO: remove after testing — restrict bot to owner only
-ALLOWED_TELEGRAM_IDS: set[int] = {75524586}
+ALLOWED_TELEGRAM_IDS: set[int] = {75524586, 171054416}
 
 
 @router.post("/webhook/telegram/{shop_token}")
