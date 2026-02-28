@@ -266,6 +266,17 @@ class ConversationEngine:
         # Process the message through the step handler
         result = await handler.process(message_text, state)
 
+        # Apply any partial data extracted by the step handler regardless of intent.
+        # This is critical for the greeting step: when the user writes "у меня стартер
+        # не крутит" the LLM can't find a brand yet (intent stays on the greeting), but
+        # it DOES extract problem_description/problem_category.  We must persist those
+        # so that on the very next message ("ниссан хтерра 2007") the engine already
+        # has the problem saved and can jump straight to estimate.
+        if result.update_data:
+            for key, value in result.update_data.items():
+                if hasattr(state.collected, key):
+                    setattr(state.collected, key, value)
+
         # Intent-based routing: don't advance on questions/off-topic
         if result.intent in ("question", "off_topic"):
             state.messages_count += 1
@@ -280,11 +291,7 @@ class ConversationEngine:
 
             return result
 
-        # Update collected data
-        if result.update_data:
-            for key, value in result.update_data.items():
-                if hasattr(state.collected, key):
-                    setattr(state.collected, key, value)
+        # update_data was already applied above (before the intent check)
 
         # Advance to next step
         if result.next_step:

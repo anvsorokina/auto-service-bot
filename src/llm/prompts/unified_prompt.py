@@ -45,10 +45,115 @@ DEFAULT_FAQ = """
 STEP_INSTRUCTIONS = {
     "greeting": """
 ЦЕЛЬ: узнать какой автомобиль нужно починить.
-Нужные данные: device_category (car — всегда "car"), device_brand (марка: Toyota/BMW/Mercedes/
-Hyundai/Kia/Volkswagen/Lada/Ford/Renault/Nissan/другое), device_model (модель: Camry/X5/Vesta/...).
+Нужные данные: device_category (car — всегда "car"), device_brand (марка), device_model (модель).
 Если человек сразу описал и автомобиль и проблему — собери ВСЁ.
-В parsed_data включи все поля что удалось извлечь.
+В parsed_data включи ВСЕ поля что удалось извлечь — и про авто, и про проблему.
+
+РАСШИФРОВКА РУССКИХ НАПИСАНИЙ МАРОК (будь агрессивен в распознавании):
+  ниссан / nisan / нисан → Nissan
+  тойота / тайота → Toyota
+  хонда / honda → Honda
+  форд / фоpд → Ford
+  рено / рено / renault → Renault
+  шевроле / шевролет → Chevrolet
+  мазда → Mazda
+  мицубиси / митсубиси / митсубиши / мицубиши → Mitsubishi
+  субару / subaru → Subaru
+  сузуки / suzuki → Suzuki
+  лексус / lexus → Lexus
+  инфинити / инфинитy / infiniti → Infiniti
+  шкода / skoda → Skoda
+  пежо / пожо / peugeot → Peugeot
+  ситроен / citroen → Citroen
+  ауди / audi → Audi
+  бмв / bmw → BMW
+  мерседес / мерс / mercedes → Mercedes
+  хундай / хёндэ / хёндай / hyundai → Hyundai
+  киа / kia → Kia
+  фольксваген / фольцваген / volkswagen / vw / вв → Volkswagen
+  порше / porsche → Porsche
+  вольво / volvo → Volvo
+  джип / jeep → Jeep
+  додж / dodge → Dodge
+  крайслер / chrysler → Chrysler
+  дэу / дэво / daewoo → Daewoo
+  сангйонг / сангйонг / ссангйонг / ssangyong → SsangYong
+  чери / chery → Chery
+  хавал / хавейл / haval → Haval
+  джили / geely → Geely
+  лифан / lifan → Lifan
+  ваз / лада / lada / жигули / жига → Lada
+  газ / gaz → GAZ
+  уаз / uaz → UAZ
+  опель / opel → Opel
+  пежо / pegeot → Peugeot
+  ягуар / jaguar → Jaguar
+  ленд ровер / ленд-ровер / land rover / лэнд ровер → Land Rover
+  лэнд крузер / ленд крузер (это модель Toyota, brand=Toyota, model=Land Cruiser)
+  рэв4 / рав4 / рав-4 (это модель Toyota, brand=Toyota, model=RAV4)
+
+РАСШИФРОВКА РУССКИХ НАПИСАНИЙ МОДЕЛЕЙ:
+  хтерра / х-терра / xterra → X-Terra (Nissan)
+  камри / camry → Camry (Toyota)
+  королла / corolla → Corolla (Toyota)
+  аутлендер / outlander → Outlander (Mitsubishi)
+  солярис / solaris → Solaris (Hyundai)
+  крета / creta → Creta (Hyundai)
+  спортейдж / sportage → Sportage (Kia)
+  соренто / sorento → Sorento (Kia)
+  тигуан / tiguan → Tiguan (Volkswagen)
+  рав4 / рэв4 / рав-4 → RAV4 (Toyota)
+  ленд крузер / ленд-крузер / прадо → Land Cruiser / Land Cruiser Prado (Toyota)
+  хайлюкс / хайлакс → Hilux (Toyota)
+  виш / wish → Wish (Toyota)
+  приус / prius → Prius (Toyota)
+  лэндкрузер / ленд крузер → Land Cruiser (Toyota)
+  паджеро / pajero → Pajero (Mitsubishi)
+  галант / galant → Galant (Mitsubishi)
+  аккорд / accord → Accord (Honda)
+  сивик / civic → Civic (Honda)
+  фокус / focus → Focus (Ford)
+  мондео / mondeo → Mondeo (Ford)
+  логан / logan → Logan (Renault)
+  дастер / duster → Duster (Renault)
+  астра / astra → Astra (Opel)
+  вектра / vectra → Vectra (Opel)
+  пассат / passat → Passat (Volkswagen)
+  гольф / golf → Golf (Volkswagen)
+  поло / polo → Polo (Volkswagen)
+  октавия / octavia → Octavia (Skoda)
+  рапид / rapid → Rapid (Skoda)
+  ксиал / xial / x-trail / икстрейл → X-Trail (Nissan)
+  микра / micra → Micra (Nissan)
+  альмера / almera → Almera (Nissan)
+  теана / teana → Teana (Nissan)
+  тиана / teana → Teana (Nissan)
+  мурано / murano → Murano (Nissan)
+  патфайндер / pathfinder → Pathfinder (Nissan)
+  навара / navara → Navara (Nissan)
+  примера / primera → Primera (Nissan)
+  максима / maxima → Maxima (Nissan)
+
+ПРАВИЛА ИЗВЛЕЧЕНИЯ:
+1. Если в тексте есть ХОТЬ ЧТО-ТО похожее на марку авто — извлеки device_brand. Не жди идеального написания.
+2. Год (4 цифры типа 2007, 2015, 2018 и т.д.) → записывай в device_model как часть (напр. "X-Terra 2007").
+3. Если человек описал ПРОБЛЕМУ, но не упомянул авто — сохрани problem_description и problem_category в parsed_data,
+   should_advance=false (ещё нужна марка). Ответ — спроси марку с кнопками.
+4. Если человек описал И авто И проблему — собери всё, should_advance=true.
+5. Если человек написал только марку (без модели) — собери device_brand, should_advance=true
+   (двигаемся к шагу модели).
+6. Если есть марка + модель — should_advance=true.
+7. Будь агрессивным: "ниссан хтерра 2007" ОДНОЗНАЧНО = brand=Nissan, model=X-Terra 2007.
+   "масло поменять на камри" = brand=Toyota, model=Camry, problem_category=oil_change.
+
+ПРИМЕРЫ ПРАВИЛЬНОГО РАЗБОРА:
+- "ниссан хтерра 2007" → device_brand=Nissan, device_model=X-Terra 2007, should_advance=true
+- "камри 2015 замена масла" → device_brand=Toyota, device_model=Camry 2015, problem_category=oil_change, should_advance=true
+- "у меня стартер не крутит" → problem_description="стартер не крутит", problem_category="engine_repair", should_advance=false
+- "масло поменять на камри" → device_brand=Toyota, device_model=Camry, problem_category=oil_change, should_advance=true
+- "хонда аккорд не заводится" → device_brand=Honda, device_model=Accord, problem_description="не заводится", problem_category="engine_repair", should_advance=true
+- "тормоза скрипят" → problem_description="тормоза скрипят", problem_category="brake_repair", should_advance=false
+- "субару форестер" → device_brand=Subaru, device_model=Forester, should_advance=true
 """,
     "device_type": """
 ЦЕЛЬ: узнать марку автомобиля.

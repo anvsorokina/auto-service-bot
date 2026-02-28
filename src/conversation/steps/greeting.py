@@ -77,23 +77,36 @@ class GreetingStep(BaseStep):
 
         parsed = result.parsed_data
 
-        # User gave full brand + model info
-        if parsed.get("device_model") and parsed.get("device_brand"):
+        # Helper: collect any problem fields the LLM extracted
+        def _problem_fields(src: dict) -> dict:
+            fields = {}
+            if src.get("problem_category"):
+                fields["problem_category"] = src["problem_category"]
+            if src.get("problem_description"):
+                fields["problem_description"] = src["problem_description"]
+            if src.get("urgency_hint") or src.get("urgency"):
+                fields["urgency"] = src.get("urgency_hint") or src.get("urgency")
+            return fields
+
+        # ── Case 1: brand + model both known ──────────────────────────
+        if parsed.get("device_brand") and parsed.get("device_model"):
             update = {
                 "device_category": parsed.get("device_category", "car"),
                 "device_brand": parsed["device_brand"],
                 "device_model": parsed["device_model"],
             }
-            # If problem was also mentioned, grab it too
-            if parsed.get("problem_category"):
-                update["problem_category"] = parsed["problem_category"]
-                update["problem_description"] = parsed.get("problem_description", "")
+            problem = _problem_fields(parsed)
+            update.update(problem)
+
+            # If problem is known too → skip straight to estimate
+            if problem.get("problem_category"):
                 return StepResult(
                     response_text=result.response_text,
-                    next_step=ConversationStep.CONTACT_INFO.value,
+                    next_step=ConversationStep.ESTIMATE.value,
                     update_data=update,
                     intent=result.intent,
                 )
+            # Brand + model, no problem → ask about the problem
             return StepResult(
                 response_text=result.response_text,
                 next_step=ConversationStep.PROBLEM.value,
@@ -101,21 +114,43 @@ class GreetingStep(BaseStep):
                 intent=result.intent,
             )
 
-        # Got brand but not model
+        # ── Case 2: brand only (no model) ─────────────────────────────
         if parsed.get("device_brand"):
+            update = {
+                "device_category": parsed.get("device_category", "car"),
+                "device_brand": parsed["device_brand"],
+            }
+            problem = _problem_fields(parsed)
+            update.update(problem)
+
+            # Brand + problem known → skip model, go to estimate
+            if problem.get("problem_category"):
+                return StepResult(
+                    response_text=result.response_text,
+                    next_step=ConversationStep.ESTIMATE.value,
+                    update_data=update,
+                    intent=result.intent,
+                )
+            # Brand only → ask for model
             return StepResult(
                 response_text=result.response_text,
                 next_step=ConversationStep.DEVICE_MODEL.value,
-                update_data={
-                    "device_category": parsed.get("device_category", "car"),
-                    "device_brand": parsed["device_brand"],
-                },
+                update_data=update,
                 intent=result.intent,
             )
 
-        # Didn't understand — show buttons with LLM response
+        # ── Case 3: no brand found — save any problem data and show buttons ──
+        # This handles "у меня стартер не крутит": we save the problem description
+        # so that when the user types the car brand on the NEXT message the engine
+        # already has problem_description / problem_category in collected data.
+        problem = _problem_fields(parsed)
+        # Also preserve problem info that may already be in collected state
+        # (carry-over from a previous incomplete extraction)
+        update_data = problem if problem else None
+
         return StepResult(
             response_text=result.response_text,
             keyboard=CAR_BRAND_KEYBOARD,
+            update_data=update_data,
             intent=result.intent,
         )
