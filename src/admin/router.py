@@ -65,14 +65,14 @@ async def telegram_auth(
 
     telegram_id = int(auth_data["id"])
 
-    # Find shop by owner_telegram_id
+    # Find shop by owner_telegram_id (use first() to handle multiple shops)
     result = await db.execute(
         select(Shop).where(
             Shop.owner_telegram_id == telegram_id,
             Shop.is_active == True,  # noqa: E712
-        )
+        ).order_by(Shop.created_at.desc())
     )
-    shop = result.scalar_one_or_none()
+    shop = result.scalars().first()
 
     if not shop:
         logger.warning("admin_login_no_shop", telegram_id=telegram_id)
@@ -136,9 +136,9 @@ async def telegram_auth_get(
         select(Shop).where(
             Shop.owner_telegram_id == telegram_id,
             Shop.is_active == True,  # noqa: E712
-        )
+        ).order_by(Shop.created_at.desc())
     )
-    shop = result.scalar_one_or_none()
+    shop = result.scalars().first()
 
     if not shop:
         return RedirectResponse(url="/admin/login?error=shop_not_found")
