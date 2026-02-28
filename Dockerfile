@@ -9,8 +9,8 @@ COPY src/ ./src/
 # Install Python dependencies
 RUN pip install --no-cache-dir .
 
-# Expose port
+# Expose port (Railway sets PORT env var)
 EXPOSE 8000
 
-# Run on port 8000 (default)
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use shell form so $PORT is expanded at runtime
+CMD uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}
