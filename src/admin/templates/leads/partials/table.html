@@ -1,0 +1,83 @@
+{% if leads %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Клиент</th>
+            <th>Категория</th>
+            <th>Автомобиль</th>
+            <th>Проблема</th>
+            <th>Оценка</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>
+                {% if lead.created_at %}
+                {{ lead.created_at.strftime('%d.%m %H:%M') }}
+                {% endif %}
+            </td>
+            <td>
+                <strong>{{ lead.customer_name or '—' }}</strong>
+                {% if lead.customer_phone %}
+                <br><small style="color: var(--gray-500);">{{ lead.customer_phone }}</small>
+                {% endif %}
+            </td>
+            <td>{{ device_category_labels.get(lead.device_category, lead.device_category or '—') }}</td>
+            <td>{{ lead.device_full_name or '—' }}</td>
+            <td>
+                <span title="{{ lead.problem_summary or '' }}">
+                    {{ (lead.problem_summary or '—')[:50] }}{% if lead.problem_summary and lead.problem_summary|length > 50 %}...{% endif %}
+                </span>
+            </td>
+            <td>
+                {% if lead.estimated_price_min and lead.estimated_price_max %}
+                {{ '{:,.0f}'.format(lead.estimated_price_min|float) }}–{{ '{:,.0f}'.format(lead.estimated_price_max|float) }} ₽
+                {% else %}
+                <span style="color: var(--gray-500);">Диагностика</span>
+                {% endif %}
+            </td>
+            <td>
+                <span class="badge badge-{{ lead.status }}">{{ status_labels.get(lead.status, lead.status) }}</span>
+            </td>
+            <td>
+                <a href="/admin/leads/{{ lead.id }}" class="btn btn-sm btn-outline">Открыть</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="/admin/leads?page={{ page - 1 }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">&laquo;</a>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+    {% if p == page %}
+    <a class="active">{{ p }}</a>
+    {% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}
+    <a href="/admin/leads?page={{ p }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">{{ p }}</a>
+    {% elif p == 4 or p == total_pages - 3 %}
+    <span>...</span>
+    {% endif %}
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <a href="/admin/leads?page={{ page + 1 }}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>Заявок пока нет</h3>
+    <p>Когда клиенты напишут боту, заявки появятся здесь.</p>
+</div>
+{% endif %}

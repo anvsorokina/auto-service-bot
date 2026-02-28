@@ -1,0 +1,245 @@
+{#
+  chat/panel.html — reusable master chat panel
+  Context vars:
+    conversation  — Conversation ORM object
+    messages      — list of Message objects
+    shop          — Shop ORM object
+    flash         — optional success/error text
+#}
+{% set conv_id = conversation.id | string %}
+{% set is_human = conversation.mode == "human" %}
+
+<style>
+/* Pico CSS full reset for chat input area */
+#chat-panel-{{ conv_id }} .chat-input-area form { margin-bottom: 0 !important; }
+#chat-panel-{{ conv_id }} .chat-send-row {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0.5rem !important;
+  align-items: flex-end !important;
+}
+#chat-panel-{{ conv_id }} .chat-send-row textarea {
+  all: unset !important;
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  padding: 0.5rem 0.75rem !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  font-family: inherit !important;
+  line-height: 1.4 !important;
+  resize: none !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: break-word !important;
+  field-sizing: content !important;
+  min-height: 2.5rem !important;
+  max-height: 6rem !important;
+  overflow-y: auto !important;
+}
+#chat-panel-{{ conv_id }} .chat-send-row button[type="submit"] {
+  all: unset !important;
+  flex-shrink: 0 !important;
+  padding: 0.5rem 1rem !important;
+  background: #2563eb !important;
+  color: white !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+#chat-panel-{{ conv_id }} .chat-send-row button[type="submit"]:hover {
+  background: #1d4ed8 !important;
+}
+#chat-panel-{{ conv_id }} .chat-quick-replies form { margin-bottom: 0 !important; display: inline !important; }
+</style>
+
+<div id="chat-panel-{{ conv_id }}" class="detail-card" style="padding: 0;">
+
+  {# ── Mode indicator bar ─────────────────────────────────── #}
+  <div class="chat-mode-bar" style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--gray-200);
+      background: {% if is_human %}#fff3cd{% else %}#f0fdf4{% endif %};
+      border-radius: 8px 8px 0 0;
+  ">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      {% if is_human %}
+        <span class="badge" style="background: #fd7e14; color: white;">👨‍🔧 Мастер отвечает</span>
+      {% else %}
+        <span class="badge" style="background: #16a34a; color: white;">🤖 Бот отвечает</span>
+      {% endif %}
+      <span style="font-size: 0.8rem; color: var(--gray-500);">
+        {% if conversation.channel == 'whatsapp' %}
+        WhatsApp: {{ conversation.external_user_id }}
+        {% else %}
+        Telegram ID: {{ conversation.external_user_id }}
+        {% endif %}
+      </span>
+    </div>
+
+    <div>
+      {% if is_human %}
+        <form hx-post="/admin/chat/{{ conv_id }}/release"
+              hx-target="#chat-panel-{{ conv_id }}"
+              hx-swap="outerHTML"
+              style="display: inline;">
+          <button type="submit" class="btn btn-sm btn-outline">
+            🤖 Вернуть боту
+          </button>
+        </form>
+      {% else %}
+        <form hx-post="/admin/chat/{{ conv_id }}/takeover"
+              hx-target="#chat-panel-{{ conv_id }}"
+              hx-swap="outerHTML"
+              style="display: inline;">
+          <button type="submit" class="btn btn-sm btn-warning">
+            👨‍🔧 Взять диалог
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── Flash message ─────────────────────────────────────── #}
+  {% if flash %}
+  <div class="alert alert-success" style="margin: 0.5rem 1rem 0;">{{ flash }}</div>
+  {% endif %}
+
+  {# ── Messages list ────────────────────────────────────── #}
+  {# Store latest message timestamp for incremental polling #}
+  {% if messages %}
+  <input type="hidden"
+         id="chat-last-ts-{{ conv_id }}"
+         value="{{ messages[-1].created_at.isoformat() }}">
+  {% else %}
+  <input type="hidden" id="chat-last-ts-{{ conv_id }}" value="">
+  {% endif %}
+
+  <div id="chat-messages-{{ conv_id }}"
+       class="chat-history"
+       style="max-height: 420px; border-radius: 0;"
+       {% if is_human %}
+       hx-get="/admin/chat/{{ conv_id }}/messages"
+       hx-trigger="every 5s"
+       hx-swap="beforeend"
+       hx-target="#chat-messages-{{ conv_id }}"
+       hx-vals="js:{after: document.getElementById('chat-last-ts-{{ conv_id }}').value}"
+       hx-on::after-request="updateChatLastTs('{{ conv_id }}')"
+       {% endif %}>
+    {% if messages %}
+      {% for msg in messages %}
+        {% include "chat/message_bubble.html" %}
+      {% endfor %}
+    {% else %}
+      <div class="empty-state" style="padding: 2rem;">
+        <p>Сообщений пока нет</p>
+      </div>
+    {% endif %}
+  </div>
+
+  {# ── Input area (only in human mode) ──────────────────── #}
+  {% if is_human %}
+  <div class="chat-input-area" style="
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--gray-200);
+      background: white;
+      border-radius: 0 0 8px 8px;
+  ">
+    {# Quick reply buttons #}
+    <div class="chat-quick-replies" style="
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.6rem;
+    ">
+      {% set quick_replies = [
+        ("accept_today",    "Принять сегодня"),
+        ("accept_tomorrow", "Принять завтра"),
+        ("need_diagnostic", "Нужна диагностика"),
+        ("send_photo",      "Фото устройства"),
+        ("will_call",       "Перезвоним"),
+      ] %}
+      {% for key, label in quick_replies %}
+      <form hx-post="/admin/chat/{{ conv_id }}/quick-reply"
+            hx-target="#chat-messages-{{ conv_id }}"
+            hx-swap="beforeend"
+            hx-on::after-request="scrollChatToBottom('{{ conv_id }}')"
+            style="display: inline;">
+        <input type="hidden" name="template" value="{{ key }}">
+        <button type="submit" class="btn btn-sm btn-outline" style="font-size: 0.75rem;">
+          {{ label }}
+        </button>
+      </form>
+      {% endfor %}
+    </div>
+
+    {# Free-text send form #}
+    <form id="chat-send-form-{{ conv_id }}"
+          hx-post="/admin/chat/{{ conv_id }}/send"
+          hx-target="#chat-messages-{{ conv_id }}"
+          hx-swap="beforeend"
+          hx-on::after-request="clearChatInput('{{ conv_id }}'); scrollChatToBottom('{{ conv_id }}')">
+      <div class="chat-send-row">
+        <textarea name="text"
+                  id="chat-text-{{ conv_id }}"
+                  placeholder="Напишите сообщение..."
+                  rows="2"
+                  onkeydown="handleChatEnter(event, '{{ conv_id }}')"
+        ></textarea>
+        <button type="submit" class="btn btn-primary">
+          Отправить
+        </button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+function scrollChatToBottom(convId) {
+  const el = document.getElementById('chat-messages-' + convId);
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+function clearChatInput(convId) {
+  const el = document.getElementById('chat-text-' + convId);
+  if (el) el.value = '';
+}
+
+function handleChatEnter(event, convId) {
+  // Send on Enter (not Shift+Enter)
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    const form = document.getElementById('chat-send-form-' + convId);
+    if (form) htmx.trigger(form, 'submit');
+  }
+}
+
+function updateChatLastTs(convId) {
+  // After polling for new messages, update the timestamp to the last
+  // visible message bubble so we only fetch messages newer than that.
+  const container = document.getElementById('chat-messages-' + convId);
+  if (!container) return;
+  const bubbles = container.querySelectorAll('[data-ts]');
+  if (!bubbles.length) return;
+  const lastTs = bubbles[bubbles.length - 1].getAttribute('data-ts');
+  if (lastTs) {
+    const tsInput = document.getElementById('chat-last-ts-' + convId);
+    if (tsInput) tsInput.value = lastTs;
+    // Auto-scroll to bottom when new messages arrive
+    scrollChatToBottom(convId);
+  }
+}
+
+// Scroll to bottom on initial load
+document.addEventListener('DOMContentLoaded', function() {
+  scrollChatToBottom('{{ conv_id }}');
+});
+</script>

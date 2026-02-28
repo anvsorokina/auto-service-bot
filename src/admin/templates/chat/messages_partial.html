@@ -1,0 +1,9 @@
+{#
+  chat/messages_partial.html
+  Context: messages — list of Message ORM objects
+  Returned by GET /admin/chat/{id}/messages for polling.
+  Gets appended beforeend into the chat-messages div.
+#}
+{% for msg in messages %}
+{% include "chat/message_bubble.html" %}
+{% endfor %}

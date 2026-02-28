@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Заявки{% endblock %}
+{% block page_title %}📋 Заявки{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Всего заявок</div>
+        <div class="stat-value">{{ total }}</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+    <select hx-get="/admin/leads"
+            hx-target="#leads-table"
+            hx-include="[name='search']"
+            name="status">
+        <option value="">Все статусы</option>
+        {% for key, label in status_labels.items() %}
+        <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="search"
+           name="search"
+           placeholder="Поиск по имени, автомобилю..."
+           value="{{ search }}"
+           hx-get="/admin/leads"
+           hx-target="#leads-table"
+           hx-trigger="keyup changed delay:300ms"
+           hx-include="[name='status']">
+</div>
+
+<!-- Table -->
+<div id="leads-table">
+    {% include "leads/partials/table.html" %}
+</div>
+{% endblock %}

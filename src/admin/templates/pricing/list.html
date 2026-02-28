@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Цены{% endblock %}
+{% block page_title %}💰 Цены на услуги{% endblock %}
+
+{% block header_actions %}
+<a href="/admin/pricing/new" class="btn btn-primary">+ Добавить цену</a>
+{% endblock %}
+
+{% block content %}
+{% if rules %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Вид работ</th>
+            <th>Марка</th>
+            <th>Модель</th>
+            <th>Цена</th>
+            <th>Уровень</th>
+            <th>Гарантия</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rule in rules %}
+        <tr id="rule-{{ rule.id }}">
+            <td>
+                {% if rule.repair_type_id and repair_types.get(rule.repair_type_id|string) %}
+                {{ repair_types[rule.repair_type_id|string].name_ru }}
+                {% else %}
+                Все виды
+                {% endif %}
+            </td>
+            <td>{{ rule.device_brand or 'Любая' }}</td>
+            <td>{{ rule.device_model_pattern or 'Любая' }}</td>
+            <td>
+                <strong>{{ '{:,.0f}'.format(rule.price_min|float) }} – {{ '{:,.0f}'.format(rule.price_max|float) }} ₽</strong>
+            </td>
+            <td>
+                {% if rule.tier == 'basic' %}
+                <span class="badge badge-viewed">Эконом</span>
+                {% elif rule.tier == 'improved' %}
+                <span class="badge badge-contacted">Улучшенный</span>
+                {% elif rule.tier == 'original' %}
+                <span class="badge badge-won">OEM / Оригинал</span>
+                {% else %}
+                <span class="badge badge-new">Стандарт</span>
+                {% endif %}
+            </td>
+            <td>{{ rule.warranty_months }} мес.</td>
+            <td>
+                <a href="/admin/pricing/{{ rule.id }}/edit" class="btn btn-sm btn-outline">✏️</a>
+                <button class="btn btn-sm btn-danger"
+                        hx-delete="/admin/pricing/{{ rule.id }}"
+                        hx-target="#rule-{{ rule.id }}"
+                        hx-swap="outerHTML"
+                        data-confirm="Удалить это ценовое правило?">🗑️</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">💰</div>
+    <h3>Цены ещё не настроены</h3>
+    <p>Добавьте цены на услуги, чтобы бот мог называть стоимость клиентам.</p>
+    <a href="/admin/pricing/new" class="btn btn-primary">Добавить первую цену</a>
+</div>
+{% endif %}
+{% endblock %}

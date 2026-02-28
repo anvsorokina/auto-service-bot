@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}{{ (lead.customer_name if lead and lead.customer_name else conversation.customer_name) or (('WA: ' if conversation.channel == 'whatsapp' else 'TG: ') ~ conversation.external_user_id) }}{% endblock %}
+{% block page_title %}
+    <a href="/admin/conversations" style="text-decoration: none; color: var(--gray-500); font-size: 0.9rem;">&larr; Назад к клиентам</a>
+{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+
+    <!-- Left column: client data -->
+    <div>
+
+        <!-- User identity -->
+        <div class="detail-card">
+            <h3>👤 Клиент</h3>
+            <div class="detail-row">
+                <span class="detail-label">Имя</span>
+                <span class="detail-value">
+                    {{ (lead.customer_name if lead and lead.customer_name else conversation.customer_name) or '—' }}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Телефон</span>
+                <span class="detail-value">
+                    {% set phone = (lead.customer_phone if lead and lead.customer_phone else conversation.customer_phone) %}
+                    {% if phone %}
+                    <a href="tel:{{ phone }}">{{ phone }}</a>
+                    {% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Канал</span>
+                <span class="detail-value">
+                    {% if conversation.channel == 'whatsapp' %}
+                    <span style="color: #25d366; font-weight: 600;">WhatsApp</span>
+                    <span style="font-family: monospace; font-size: 0.85rem; color: var(--gray-500); margin-left: 0.3rem;">{{ conversation.external_user_id }}</span>
+                    {% else %}
+                    <span style="color: #0088cc; font-weight: 600;">Telegram</span>
+                    {% if lead and lead.customer_telegram and not lead.customer_telegram.startswith('tg:') and not lead.customer_telegram.startswith('wa:') %}
+                    <a href="https://t.me/{{ lead.customer_telegram }}" target="_blank" style="margin-left: 0.3rem;">@{{ lead.customer_telegram }}</a>
+                    {% else %}
+                    <span style="font-family: monospace; font-size: 0.85rem; color: var(--gray-500); margin-left: 0.3rem;">{{ conversation.external_user_id }}</span>
+                    {% endif %}
+                    {% endif %}
+                </span>
+            </div>
+            {% if conversation.preferred_time %}
+            <div class="detail-row">
+                <span class="detail-label">Удобное время</span>
+                <span class="detail-value">{{ conversation.preferred_time }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Car & problem -->
+        <div class="detail-card">
+            <h3>🚗 Автомобиль и проблема</h3>
+            <div class="detail-row">
+                <span class="detail-label">Категория</span>
+                <span class="detail-value">
+                    {{ device_category_labels.get(conversation.device_category, conversation.device_category or '—') }}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Автомобиль</span>
+                <span class="detail-value">
+                    {% if lead and lead.device_full_name %}
+                    {{ lead.device_full_name }}
+                    {% elif conversation.device_brand or conversation.device_model %}
+                    {{ conversation.device_brand or '' }} {{ conversation.device_model or '' }}
+                    {% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Проблема</span>
+                <span class="detail-value">
+                    {{ (lead.problem_summary if lead and lead.problem_summary else conversation.problem_description) or '—' }}
+                </span>
+            </div>
+            {% if conversation.urgency %}
+            <div class="detail-row">
+                <span class="detail-label">Срочность</span>
+                <span class="detail-value">{{ conversation.urgency }}</span>
+            </div>
+            {% endif %}
+            {% set price_min = (lead.estimated_price_min if lead and lead.estimated_price_min else conversation.estimated_price_min) %}
+            {% set price_max = (lead.estimated_price_max if lead and lead.estimated_price_max else conversation.estimated_price_max) %}
+            {% if price_min and price_max %}
+            <div class="detail-row">
+                <span class="detail-label">Оценка</span>
+                <span class="detail-value">
+                    {{ '{:,.0f}'.format(price_min|float) }}–{{ '{:,.0f}'.format(price_max|float) }} ₽
+                    {% if conversation.price_confidence %}
+                    <small style="color: var(--gray-500);">({{ conversation.price_confidence }})</small>
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Status & warmth -->
+        <div class="detail-card">
+            <h3>📊 Состояние</h3>
+            <div class="detail-row">
+                <span class="detail-label">Теплота</span>
+                <span class="detail-value">
+                    {% if warmth == 'hot' %}
+                    <span class="badge badge-hot">Горячий</span>
+                    {% elif warmth == 'warm' %}
+                    <span class="badge badge-warm">Тёплый</span>
+                    {% else %}
+                    <span class="badge badge-cold">Холодный</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Шаг</span>
+                <span class="detail-value">{{ step_labels.get(conversation.current_step, conversation.current_step or '—') }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Режим</span>
+                <span class="detail-value">{{ 'Бот' if conversation.mode == 'bot' else 'Оператор' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Статус диалога</span>
+                <span class="detail-value">
+                    <span class="badge badge-conv-{{ conversation.status }}">
+                        {{ status_labels.get(conversation.status, conversation.status) }}
+                    </span>
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Сообщений</span>
+                <span class="detail-value">{{ conversation.messages_count }}</span>
+            </div>
+        </div>
+
+        {% if lead %}
+        <!-- Lead status management -->
+        <div class="detail-card">
+            <h3>📋 Заявка</h3>
+            <div id="status-badge" style="margin-bottom: 1rem;">
+                <span class="badge badge-{{ lead.status }}">{{ lead_status_labels.get(lead.status, lead.status) }}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                {% for key, label in lead_status_labels.items() %}
+                {% if key != lead.status %}
+                <form hx-patch="/admin/leads/{{ lead.id }}/status"
+                      hx-target="#status-badge"
+                      hx-swap="innerHTML"
+                      style="display: inline;">
+                    <input type="hidden" name="new_status" value="{{ key }}">
+                    <button type="submit" class="btn btn-sm btn-outline">{{ label }}</button>
+                </form>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Master notes -->
+        <div class="detail-card">
+            <h3>📝 Заметки мастера</h3>
+            <div id="notes-result"></div>
+            <form hx-patch="/admin/leads/{{ lead.id }}/notes"
+                  hx-target="#notes-result"
+                  hx-swap="innerHTML">
+                <textarea name="master_notes"
+                          placeholder="Заметки о заявке..."
+                          style="width: 100%; min-height: 80px; margin-bottom: 0.5rem;">{{ lead.master_notes or '' }}</textarea>
+                <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="detail-card">
+            <h3>📋 Заявка</h3>
+            <p style="color: var(--gray-500); font-size: 0.9rem;">Заявка ещё не создана — клиент не дошёл до оценки.</p>
+        </div>
+        {% endif %}
+
+        <!-- Timestamps -->
+        <div class="detail-card">
+            <h3>ℹ️ Метаданные</h3>
+            <div class="detail-row">
+                <span class="detail-label">Начат</span>
+                <span class="detail-value">
+                    {{ conversation.started_at.strftime('%d.%m.%Y %H:%M') if conversation.started_at else '—' }}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Последнее сообщение</span>
+                <span class="detail-value">
+                    {{ conversation.last_message_at.strftime('%d.%m.%Y %H:%M') if conversation.last_message_at else '—' }}
+                </span>
+            </div>
+            {% if conversation.completed_at %}
+            <div class="detail-row">
+                <span class="detail-label">Завершён</span>
+                <span class="detail-value">{{ conversation.completed_at.strftime('%d.%m.%Y %H:%M') }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Right column: master chat panel -->
+    <div>
+        <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: var(--gray-700);">💬 Чат с клиентом</h3>
+        {% set messages = chat_messages %}
+        {% include "chat/panel.html" %}
+    </div>
+
+</div>
+{% endblock %}

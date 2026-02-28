@@ -1,0 +1,134 @@
+{% if rows %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Клиент</th>
+            <th>Автомобиль</th>
+            <th>Проблема</th>
+            <th>Оценка</th>
+            <th>Шаг</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for conv, lead in rows %}
+        {% set w = conv._warmth %}
+        {# Pick best available data: lead first, then conversation #}
+        {% set name = (lead.customer_name if lead and lead.customer_name else conv.customer_name) or '' %}
+        {% set phone = (lead.customer_phone if lead and lead.customer_phone else conv.customer_phone) or '' %}
+        {% set device = (lead.device_full_name if lead and lead.device_full_name else ((conv.device_brand or '') ~ ' ' ~ (conv.device_model or '')).strip()) or '' %}
+        {% set problem = (lead.problem_summary if lead and lead.problem_summary else conv.problem_description) or '' %}
+        {% set price_min = (lead.estimated_price_min if lead and lead.estimated_price_min else conv.estimated_price_min) %}
+        {% set price_max = (lead.estimated_price_max if lead and lead.estimated_price_max else conv.estimated_price_max) %}
+        <tr>
+            <td>
+                {% if conv.last_message_at %}
+                {{ conv.last_message_at.strftime('%d.%m %H:%M') }}
+                {% elif conv.started_at %}
+                {{ conv.started_at.strftime('%d.%m %H:%M') }}
+                {% elif conv.created_at %}
+                {{ conv.created_at.strftime('%d.%m %H:%M') }}
+                {% else %}—{% endif %}
+            </td>
+            <td>
+                {% if conv.channel == 'whatsapp' %}
+                <span title="WhatsApp" style="font-size: 0.75rem; color: #25d366;">WA</span>
+                {% else %}
+                <span title="Telegram" style="font-size: 0.75rem; color: #0088cc;">TG</span>
+                {% endif %}
+                {% if name %}
+                <strong>{{ name }}</strong>
+                {% else %}
+                <span style="font-family: monospace; font-size: 0.8rem; color: var(--gray-500);">
+                    {{ conv.external_user_id }}
+                </span>
+                {% endif %}
+                {% if phone %}
+                <br><small style="color: var(--gray-500);">{{ phone }}</small>
+                {% endif %}
+            </td>
+            <td>
+                {% if device %}
+                {{ device }}
+                {% elif conv.device_category %}
+                {{ device_category_labels.get(conv.device_category, conv.device_category) }}
+                {% else %}
+                <span style="color: var(--gray-500);">—</span>
+                {% endif %}
+            </td>
+            <td>
+                <span title="{{ problem }}">
+                    {% if problem %}
+                    {{ problem[:50] }}{% if problem|length > 50 %}...{% endif %}
+                    {% else %}
+                    <span style="color: var(--gray-500);">—</span>
+                    {% endif %}
+                </span>
+            </td>
+            <td>
+                {% if price_min and price_max %}
+                {{ '{:,.0f}'.format(price_min|float) }}–{{ '{:,.0f}'.format(price_max|float) }} ₽
+                {% else %}
+                <span style="color: var(--gray-500);">—</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if w == 'hot' %}
+                <span class="badge badge-hot" title="{{ step_labels.get(conv.current_step, '') }}">{{ step_labels.get(conv.current_step, conv.current_step or '—') }}</span>
+                {% elif w == 'warm' %}
+                <span class="badge badge-warm" title="{{ step_labels.get(conv.current_step, '') }}">{{ step_labels.get(conv.current_step, conv.current_step or '—') }}</span>
+                {% else %}
+                <span class="badge badge-cold" title="{{ step_labels.get(conv.current_step, '') }}">{{ step_labels.get(conv.current_step, conv.current_step or '—') }}</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if lead %}
+                <span class="badge badge-{{ lead.status }}">
+                    {{ lead_status_labels.get(lead.status, lead.status) }}
+                </span>
+                {% else %}
+                <span class="badge badge-conv-{{ conv.status }}">
+                    {{ status_labels.get(conv.status, conv.status) }}
+                </span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="/admin/conversations/{{ conv.id }}" class="btn btn-sm btn-outline">Открыть</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="/admin/conversations?page={{ page - 1 }}{% if warmth_filter %}&warmth={{ warmth_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">&laquo;</a>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+    {% if p == page %}
+    <a class="active">{{ p }}</a>
+    {% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}
+    <a href="/admin/conversations?page={{ p }}{% if warmth_filter %}&warmth={{ warmth_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">{{ p }}</a>
+    {% elif p == 4 or p == total_pages - 3 %}
+    <span>...</span>
+    {% endif %}
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <a href="/admin/conversations?page={{ page + 1 }}{% if warmth_filter %}&warmth={{ warmth_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}">&raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">👥</div>
+    <h3>Клиентов пока нет</h3>
+    <p>Когда клиенты напишут боту, они появятся здесь.</p>
+</div>
+{% endif %}

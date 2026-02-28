@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки{% endblock %}
+{% block page_title %}⚙️ Настройки{% endblock %}
+
+{% block content %}
+{% if saved %}
+<div class="alert alert-success">Настройки сохранены!</div>
+{% endif %}
+
+<form action="/admin/settings" method="post">
+    <!-- Basic Info -->
+    <div class="detail-card">
+        <h3>🏪 Основные</h3>
+
+        <div class="form-group">
+            <label for="name">Название автосервиса</label>
+            <input type="text" name="name" id="name" required value="{{ shop.name }}">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="address">Адрес</label>
+                <input type="text" name="address" id="address"
+                       placeholder="ул. Пушкина, д. 10"
+                       value="{{ shop.address or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="maps_url">Ссылка на карту</label>
+                <input type="url" name="maps_url" id="maps_url"
+                       placeholder="https://yandex.ru/maps/..."
+                       value="{{ shop.maps_url or '' }}">
+            </div>
+        </div>
+    </div>
+
+    <!-- Bot Settings -->
+    <div class="detail-card">
+        <h3>🤖 Настройки бота</h3>
+
+        <div class="form-group">
+            <label for="greeting_text">Приветственное сообщение</label>
+            <textarea name="greeting_text" id="greeting_text"
+                      placeholder="Привет! Я помогу с ремонтом вашего автомобиля...">{{ shop.greeting_text or '' }}</textarea>
+            <small style="color: var(--gray-500);">Оставьте пустым для стандартного приветствия</small>
+        </div>
+
+        <div class="form-group">
+            <label>Стиль общения бота</label>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                {% for value, label, desc in personality_options %}
+                <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.75rem; border: 1px solid var(--gray-200); border-radius: 8px; cursor: pointer; flex: 1; min-width: 150px;">
+                    <input type="radio" name="bot_personality" value="{{ value }}"
+                           {% if (shop.bot_personality or 'friendly') == value %}checked{% endif %}>
+                    <div>
+                        <strong>{{ label }}</strong>
+                        <br><small style="color: var(--gray-500);">{{ desc }}</small>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="promo_text">Акции и скидки</label>
+            <textarea name="promo_text" id="promo_text"
+                      placeholder="Скидка 10% на замену масла до конца месяца!&#10;Бесплатная диагностика при записи через бота.">{{ shop.promo_text or '' }}</textarea>
+            <small style="color: var(--gray-500);">Бот будет упоминать это в разговоре с клиентами</small>
+        </div>
+
+        <div class="form-group">
+            <label for="bot_faq_custom">Кастомные FAQ</label>
+            <textarea name="bot_faq_custom" id="bot_faq_custom" style="min-height: 120px;"
+                      placeholder="В: Где вы находитесь?&#10;О: Мы на ул. Пушкина, 10, вход со двора.&#10;&#10;В: Делаете ли вы кузовной ремонт?&#10;О: Да, выполняем кузовные работы и покраску.">{{ shop.bot_faq_custom or '' }}</textarea>
+            <small style="color: var(--gray-500);">Формат: В: вопрос / О: ответ. Бот будет использовать эти ответы.</small>
+        </div>
+    </div>
+
+    <!-- Data Collection -->
+    <div class="detail-card">
+        <h3>📋 Сбор данных</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" name="collect_name" value="true"
+                       {% if shop.collect_name %}checked{% endif %}>
+                Спрашивать имя клиента
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" name="collect_phone" value="true"
+                       {% if shop.collect_phone %}checked{% endif %}>
+                Спрашивать телефон
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" name="offer_appointment" value="true"
+                       {% if shop.offer_appointment %}checked{% endif %}>
+                Предлагать записаться на приём
+            </label>
+        </div>
+    </div>
+
+    <!-- Working Hours -->
+    <div class="detail-card">
+        <h3>🕐 Режим работы</h3>
+        <div id="working-hours">
+            {% for day_key, day_name in days_ru.items() %}
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <span style="width: 120px; font-size: 0.9rem;">{{ day_name }}</span>
+                {% set hours = shop.working_hours.get(day_key) if shop.working_hours else None %}
+                <label style="display: flex; align-items: center; gap: 0.25rem;">
+                    <input type="checkbox" class="day-toggle" data-day="{{ day_key }}"
+                           {% if hours %}checked{% endif %}
+                           onchange="toggleDay(this)">
+                </label>
+                <input type="time" class="day-open" data-day="{{ day_key }}"
+                       value="{{ hours.open if hours else '09:00' }}"
+                       {% if not hours %}disabled{% endif %}
+                       style="padding: 0.3rem; font-size: 0.85rem;">
+                <span>—</span>
+                <input type="time" class="day-close" data-day="{{ day_key }}"
+                       value="{{ hours.close if hours else '19:00' }}"
+                       {% if not hours %}disabled{% endif %}
+                       style="padding: 0.3rem; font-size: 0.85rem;">
+            </div>
+            {% endfor %}
+        </div>
+        <input type="hidden" name="working_hours_json" id="working-hours-json">
+    </div>
+
+    <div style="margin-top: 1rem;">
+        <button type="submit" class="btn btn-primary" onclick="prepareWorkingHours()">Сохранить настройки</button>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleDay(checkbox) {
+    const day = checkbox.dataset.day;
+    const open = document.querySelector(`.day-open[data-day="${day}"]`);
+    const close = document.querySelector(`.day-close[data-day="${day}"]`);
+    open.disabled = !checkbox.checked;
+    close.disabled = !checkbox.checked;
+}
+
+function prepareWorkingHours() {
+    const hours = {};
+    const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    days.forEach(day => {
+        const toggle = document.querySelector(`.day-toggle[data-day="${day}"]`);
+        if (toggle && toggle.checked) {
+            const open = document.querySelector(`.day-open[data-day="${day}"]`).value;
+            const close = document.querySelector(`.day-close[data-day="${day}"]`).value;
+            hours[day] = { open: open, close: close };
+        } else {
+            hours[day] = null;
+        }
+    });
+    document.getElementById('working-hours-json').value = JSON.stringify(hours);
+}
+</script>
+{% endblock %}

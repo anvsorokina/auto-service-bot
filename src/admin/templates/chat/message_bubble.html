@@ -1,0 +1,18 @@
+{#
+  chat/message_bubble.html
+  Context: msg — a single Message ORM object
+  Used both as a standalone partial (HTMX append) and via include in panel.html
+#}
+<div class="chat-msg chat-msg-{{ msg.role }}"
+     data-msg-id="{{ msg.id }}"
+     data-ts="{{ msg.created_at.isoformat() if msg.created_at else '' }}">
+  {{ msg.content }}
+  <div class="chat-msg-time">
+    {{ msg.created_at.strftime('%H:%M') if msg.created_at else '' }}
+    {% if msg.role == 'master' %}
+    · Мастер
+    {% elif msg.role == 'bot' and msg.step_name %}
+    · {{ msg.step_name }}
+    {% endif %}
+  </div>
+</div>

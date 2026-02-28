@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Панель управления{% endblock %} — АвтоСервис Бот</title>
+    <link rel="stylesheet" href="/admin/static/pico.min.css">
+    <link rel="stylesheet" href="/admin/static/style.css">
+    <script src="/admin/static/htmx.min.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🚗 {{ shop.name if shop else 'АвтоСервис' }}</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="/admin/conversations" class="{% if active_page == 'conversations' %}active{% endif %}">
+                            👥 Клиенты
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/pricing" class="{% if active_page == 'pricing' %}active{% endif %}">
+                            💰 Цены
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/schedule" class="{% if active_page == 'schedule' %}active{% endif %}">
+                            📅 Расписание
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/settings" class="{% if active_page == 'settings' %}active{% endif %}">
+                            ⚙️ Настройки
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/dashboard" class="{% if active_page == 'dashboard' %}active{% endif %}">
+                            📊 Аналитика
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/admin/logout" class="logout-link">Выйти</a>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1>{% block page_title %}{% endblock %}</h1>
+                <div class="header-actions">
+                    {% block header_actions %}{% endblock %}
+                </div>
+            </header>
+
+            {% if messages %}
+            <div class="messages">
+                {% for msg in messages %}
+                <div class="alert alert-{{ msg.type }}">{{ msg.text }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="/admin/static/app.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

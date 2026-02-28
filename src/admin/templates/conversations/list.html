@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Клиенты{% endblock %}
+{% block page_title %}👥 Клиенты{% endblock %}
+
+{% block content %}
+
+<!-- Mini-funnel bar -->
+<div class="funnel-bar" style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:1.5rem;background:white;border-radius:8px;padding:1.2rem 1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.06);margin-bottom:1.5rem;">
+    <div style="display:inline-block;text-align:center;min-width:100px;">
+        <div style="font-size:2rem;font-weight:700;color:#111827;line-height:1;margin-bottom:0.25rem;">{{ funnel.total_started }}</div>
+        <div style="font-size:0.78rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.03em;white-space:nowrap;">Начали</div>
+    </div>
+    <div style="font-size:1.4rem;color:#d1d5db;flex-shrink:0;display:inline-block;">&rarr;</div>
+    <div style="display:inline-block;text-align:center;min-width:100px;">
+        <div style="font-size:2rem;font-weight:700;color:#111827;line-height:1;margin-bottom:0.25rem;">{{ funnel.reached_problem }}</div>
+        <div style="font-size:0.78rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.03em;white-space:nowrap;">Дошли до проблемы</div>
+    </div>
+    <div style="font-size:1.4rem;color:#d1d5db;flex-shrink:0;display:inline-block;">&rarr;</div>
+    <div style="display:inline-block;text-align:center;min-width:100px;">
+        <div style="font-size:2rem;font-weight:700;color:#16a34a;line-height:1;margin-bottom:0.25rem;">{{ funnel.became_lead }}</div>
+        <div style="font-size:0.78rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.03em;white-space:nowrap;">Стали заявкой</div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+    <!-- Warmth filter buttons -->
+    <div class="warmth-filter-group" style="display: flex; gap: 0.3rem;">
+        <a href="/admin/conversations{% if status_filter %}?status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+           class="btn btn-sm {% if not warmth_filter %}btn-primary{% else %}btn-outline{% endif %}">
+            Все
+        </a>
+        <a href="/admin/conversations?warmth=hot{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+           class="btn btn-sm {% if warmth_filter == 'hot' %}btn-primary{% else %}btn-outline{% endif %}"
+           style="{% if warmth_filter == 'hot' %}background:#dc2626;border-color:#dc2626;{% else %}border-color:#dc2626;color:#dc2626;{% endif %}">
+            Горячие
+        </a>
+        <a href="/admin/conversations?warmth=warm{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+           class="btn btn-sm {% if warmth_filter == 'warm' %}btn-primary{% else %}btn-outline{% endif %}"
+           style="{% if warmth_filter == 'warm' %}background:#f59e0b;border-color:#f59e0b;color:white;{% else %}border-color:#f59e0b;color:#d97706;{% endif %}">
+            Тёплые
+        </a>
+        <a href="/admin/conversations?warmth=cold{% if status_filter %}&status={{ status_filter }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+           class="btn btn-sm {% if warmth_filter == 'cold' %}btn-primary{% else %}btn-outline{% endif %}"
+           style="{% if warmth_filter == 'cold' %}background:#6b7280;border-color:#6b7280;color:white;{% else %}border-color:#9ca3af;color:#6b7280;{% endif %}">
+            Холодные
+        </a>
+    </div>
+
+    <!-- Status filter dropdown -->
+    <select
+        name="status"
+        hx-get="/admin/conversations"
+        hx-target="#conversations-table"
+        hx-push-url="true"
+        hx-include="[name='search']"
+        style="margin-left: 0.5rem; max-width: 200px;">
+        <option value="">Все статусы</option>
+        <optgroup label="Заявки">
+            {% for key, label in lead_status_labels.items() %}
+            <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </optgroup>
+        <optgroup label="Диалоги">
+            {% for key, label in status_labels.items() %}
+            <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </optgroup>
+    </select>
+
+    <!-- Search -->
+    <input type="search"
+           name="search"
+           placeholder="Поиск по имени, автомобилю..."
+           value="{{ search }}"
+           hx-get="/admin/conversations"
+           hx-target="#conversations-table"
+           hx-trigger="keyup changed delay:300ms"
+           hx-include="[name='status']"
+           style="margin-left: auto; max-width: 250px;">
+</div>
+
+<!-- Table -->
+<div id="conversations-table">
+    {% include "conversations/partials/table.html" %}
+</div>
+
+{% endblock %}

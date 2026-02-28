@@ -1,0 +1,15 @@
+"""Redis async client for session storage."""
+
+import redis.asyncio as redis
+
+from src.config import settings
+
+redis_client = redis.from_url(
+    settings.redis_url,
+    decode_responses=True,
+)
+
+
+async def get_redis() -> redis.Redis:
+    """FastAPI dependency for Redis client."""
+    return redis_client

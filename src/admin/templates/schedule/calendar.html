@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Расписание{% endblock %}
+{% block page_title %}📅 Расписание{% endblock %}
+
+{% block header_actions %}
+<div style="display: flex; gap: 0.5rem; align-items: center;">
+    <a href="/admin/schedule?week_offset={{ week_offset - 1 }}" class="btn btn-sm btn-outline">&larr;</a>
+    <span style="font-size: 0.9rem; min-width: 180px; text-align: center;">
+        {{ week_start.strftime('%d.%m') }} — {{ week_end.strftime('%d.%m.%Y') }}
+    </span>
+    <a href="/admin/schedule?week_offset={{ week_offset + 1 }}" class="btn btn-sm btn-outline">&rarr;</a>
+    {% if week_offset != 0 %}
+    <a href="/admin/schedule" class="btn btn-sm btn-outline">Сегодня</a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;">
+    {% for day in days %}
+    <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); {% if day.is_today %}border: 2px solid var(--primary);{% endif %}">
+        <!-- Day header -->
+        <div style="padding: 0.5rem; background: {% if day.is_today %}var(--primary); color: white;{% else %}var(--gray-50);{% endif %} text-align: center; font-size: 0.85rem;">
+            <strong>{{ day.day_name }}</strong><br>
+            {{ day.date.strftime('%d.%m') }}
+        </div>
+
+        <!-- Appointments -->
+        <div style="padding: 0.5rem; min-height: 120px;">
+            {% for apt in day.appointments %}
+            <div class="schedule-event schedule-event-{{ apt.status }}"
+                 style="margin-bottom: 0.5rem;">
+                <div style="font-weight: 600; font-size: 0.8rem;">
+                    {{ apt.scheduled_at.strftime('%H:%M') }}
+                </div>
+                {% if apt.lead %}
+                <div style="font-size: 0.75rem;">
+                    {{ apt.lead.customer_name or 'Клиент' }}
+                </div>
+                <div style="font-size: 0.7rem; color: var(--gray-500);">
+                    {{ (apt.lead.device_full_name or '')[:20] }}
+                </div>
+                {% endif %}
+                <div id="apt-status-{{ apt.id }}" style="margin-top: 0.25rem;">
+                    <span class="badge badge-{{ apt.status }}" style="font-size: 0.65rem;">
+                        {{ status_labels.get(apt.status, apt.status) }}
+                    </span>
+                </div>
+                {% if apt.status == 'pending' %}
+                <div style="display: flex; gap: 0.25rem; margin-top: 0.3rem;">
+                    <form hx-patch="/admin/schedule/{{ apt.id }}/status"
+                          hx-target="#apt-status-{{ apt.id }}"
+                          hx-swap="innerHTML"
+                          style="display: inline;">
+                        <input type="hidden" name="new_status" value="confirmed">
+                        <button type="submit" class="btn btn-sm btn-success" style="padding: 0.15rem 0.3rem; font-size: 0.7rem;">✓</button>
+                    </form>
+                    <form hx-patch="/admin/schedule/{{ apt.id }}/status"
+                          hx-target="#apt-status-{{ apt.id }}"
+                          hx-swap="innerHTML"
+                          style="display: inline;">
+                        <input type="hidden" name="new_status" value="cancelled">
+                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 0.15rem 0.3rem; font-size: 0.7rem;">✗</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% if not day.appointments %}
+            <div style="text-align: center; color: var(--gray-300); font-size: 0.8rem; padding: 1rem 0;">
+                —
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

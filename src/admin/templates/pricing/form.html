@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block page_title %}
+    <a href="/admin/pricing" style="text-decoration: none; color: var(--gray-500); font-size: 0.9rem;">&larr; Назад к ценам</a>
+{% endblock %}
+
+{% block content %}
+<div class="detail-card" style="max-width: 600px;">
+    <h3>{{ form_title }}</h3>
+
+    <form action="{{ form_action }}" method="post">
+        <div class="form-group">
+            <label for="repair_type_id">Вид работ *</label>
+            <select name="repair_type_id" id="repair_type_id" required>
+                <option value="">Выберите...</option>
+                {% for rt in repair_types %}
+                <option value="{{ rt.id }}"
+                    {% if rule and rule.repair_type_id and rt.id == rule.repair_type_id %}selected{% endif %}>
+                    {{ rt.name_ru }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="device_brand">Марка</label>
+                <input type="text" name="device_brand" id="device_brand"
+                       placeholder="Toyota, BMW, Lada..."
+                       value="{{ rule.device_brand or '' if rule else '' }}">
+                <small style="color: var(--gray-500);">Оставьте пустым для любой марки</small>
+            </div>
+            <div class="form-group">
+                <label for="device_model_pattern">Модель</label>
+                <input type="text" name="device_model_pattern" id="device_model_pattern"
+                       placeholder="Camry%, X5%, Largus..."
+                       value="{{ rule.device_model_pattern or '' if rule else '' }}">
+                <small style="color: var(--gray-500);">% — любые символы после</small>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price_min">Цена от (₽) *</label>
+                <input type="number" name="price_min" id="price_min" step="100" min="0" required
+                       value="{{ rule.price_min|int if rule and rule.price_min else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="price_max">Цена до (₽) *</label>
+                <input type="number" name="price_max" id="price_max" step="100" min="0" required
+                       value="{{ rule.price_max|int if rule and rule.price_max else '' }}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tier">Уровень</label>
+                <select name="tier" id="tier">
+                    <option value="standard" {% if not rule or rule.tier == 'standard' %}selected{% endif %}>Стандарт</option>
+                    <option value="basic" {% if rule and rule.tier == 'basic' %}selected{% endif %}>Эконом (дешевле)</option>
+                    <option value="improved" {% if rule and rule.tier == 'improved' %}selected{% endif %}>Улучшенный</option>
+                    <option value="original" {% if rule and rule.tier == 'original' %}selected{% endif %}>OEM / Оригинал (дороже)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="warranty_months">Гарантия (мес.)</label>
+                <input type="number" name="warranty_months" id="warranty_months" min="0" max="36"
+                       value="{{ rule.warranty_months if rule else 3 }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="tier_description">Описание уровня</label>
+            <input type="text" name="tier_description" id="tier_description"
+                   placeholder="Аналог / ОЕМ / Оригинальная запчасть..."
+                   value="{{ rule.tier_description or '' if rule else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Заметки</label>
+            <textarea name="notes" id="notes"
+                      placeholder="Дополнительная информация...">{{ rule.notes or '' if rule else '' }}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="/admin/pricing" class="btn btn-outline">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

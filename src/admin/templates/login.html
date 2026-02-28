@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — RepairBot</title>
+    <link rel="stylesheet" href="/admin/static/pico.min.css">
+    <link rel="stylesheet" href="/admin/static/style.css">
+</head>
+<body class="login-body">
+    <main class="login-container">
+        <div class="login-card">
+            <h1>🔧 RepairBot</h1>
+            <p class="login-subtitle">Панель управления мастерской</p>
+
+            {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+
+            <div class="login-methods">
+                <h3>Войти через Telegram</h3>
+                <p class="login-hint">
+                    Используйте Telegram-аккаунт, привязанный к вашей мастерской.
+                </p>
+
+                <!-- Telegram Login Widget -->
+                <div id="telegram-login-widget">
+                    <script async src="https://telegram.org/js/telegram-widget.js?22"
+                        data-telegram-login="intake_ai_bot"
+                        data-size="large"
+                        data-radius="8"
+                        data-auth-url="/admin/auth/telegram"
+                        data-request-access="write">
+                    </script>
+                </div>
+
+                <!-- Fallback: manual login for development -->
+                <details class="dev-login">
+                    <summary>Вход по Telegram ID (для разработки)</summary>
+                    <form action="/admin/auth/telegram" method="post" class="dev-login-form">
+                        <label for="id">Telegram ID:</label>
+                        <input type="text" name="id" id="id" placeholder="75524586" required>
+                        <input type="hidden" name="hash" value="dev_bypass">
+                        <input type="hidden" name="auth_date" value="0">
+                        <input type="hidden" name="first_name" value="Dev">
+                        <button type="submit">Войти</button>
+                    </form>
+                </details>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Заявка — {{ lead.customer_name or 'Без имени' }}{% endblock %}
+{% block page_title %}
+    <a href="/admin/leads" style="text-decoration: none; color: var(--gray-500); font-size: 0.9rem;">&larr; Назад к заявкам</a>
+{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <!-- Left column: Lead info -->
+    <div>
+        <div class="detail-card">
+            <h3>👤 Клиент</h3>
+            <div class="detail-row">
+                <span class="detail-label">Имя</span>
+                <span class="detail-value">{{ lead.customer_name or '—' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Телефон</span>
+                <span class="detail-value">
+                    {% if lead.customer_phone %}
+                    <a href="tel:{{ lead.customer_phone }}">{{ lead.customer_phone }}</a>
+                    {% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Telegram</span>
+                <span class="detail-value">
+                    {% if lead.customer_telegram %}
+                    <a href="https://t.me/{{ lead.customer_telegram }}" target="_blank">@{{ lead.customer_telegram }}</a>
+                    {% else %}—{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <h3>🚗 Автомобиль и проблема</h3>
+            <div class="detail-row">
+                <span class="detail-label">Категория</span>
+                <span class="detail-value">{{ device_category_labels.get(lead.device_category, lead.device_category or '—') }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Автомобиль</span>
+                <span class="detail-value">{{ lead.device_full_name or '—' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Проблема</span>
+                <span class="detail-value">{{ lead.problem_summary or '—' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Срочность</span>
+                <span class="detail-value">{{ urgency_labels.get(lead.urgency, lead.urgency or 'Обычная') }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Оценка</span>
+                <span class="detail-value">
+                    {% if lead.estimated_price_min and lead.estimated_price_max %}
+                    {{ '{:,.0f}'.format(lead.estimated_price_min|float) }}–{{ '{:,.0f}'.format(lead.estimated_price_max|float) }} ₽
+                    {% else %}
+                    Требуется диагностика
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="detail-card">
+            <h3>📋 Статус</h3>
+            <div id="status-badge" style="margin-bottom: 1rem;">
+                <span class="badge badge-{{ lead.status }}">{{ status_labels.get(lead.status, lead.status) }}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                {% for key, label in status_labels.items() %}
+                {% if key != lead.status %}
+                <form hx-patch="/admin/leads/{{ lead.id }}/status"
+                      hx-target="#status-badge"
+                      hx-swap="innerHTML"
+                      style="display: inline;">
+                    <input type="hidden" name="new_status" value="{{ key }}">
+                    <button type="submit" class="btn btn-sm btn-outline">{{ label }}</button>
+                </form>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="detail-card">
+            <h3>📝 Заметки мастера</h3>
+            <div id="notes-result"></div>
+            <form hx-patch="/admin/leads/{{ lead.id }}/notes"
+                  hx-target="#notes-result"
+                  hx-swap="innerHTML">
+                <textarea name="master_notes"
+                          placeholder="Заметки о заявке..."
+                          style="width: 100%; min-height: 80px; margin-bottom: 0.5rem;">{{ lead.master_notes or '' }}</textarea>
+                <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right column: Chat history with master chat -->
+    <div>
+        {% if lead.conversation_id and conversation %}
+        <div style="margin-bottom: 1rem;">
+            <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: var(--gray-700);">💬 Чат с клиентом</h3>
+            {% set messages = chat_messages %}
+            {% include "chat/panel.html" %}
+        </div>
+        {% elif chat_messages %}
+        <div class="detail-card">
+            <h3>💬 История переписки</h3>
+            <div class="chat-history">
+                {% for msg in chat_messages %}
+                <div class="chat-msg chat-msg-{{ msg.role }}">
+                    {{ msg.content }}
+                    <div class="chat-msg-time">
+                        {{ msg.created_at.strftime('%H:%M') if msg.created_at else '' }}
+                        {% if msg.role == 'bot' and msg.step_name %}
+                        · {{ msg.step_name }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="detail-card">
+            <h3>💬 Переписка с ботом</h3>
+            <div class="empty-state">
+                <p>История переписки недоступна</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="detail-card">
+            <h3>ℹ️ Метаданные</h3>
+            <div class="detail-row">
+                <span class="detail-label">ID заявки</span>
+                <span class="detail-value" style="font-family: monospace; font-size: 0.8rem;">{{ lead.id }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Создана</span>
+                <span class="detail-value">{{ lead.created_at.strftime('%d.%m.%Y %H:%M') if lead.created_at else '—' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Уведомление</span>
+                <span class="detail-value">
+                    {% if lead.notification_sent %}
+                    ✅ Отправлено {{ lead.notification_sent_at.strftime('%d.%m %H:%M') if lead.notification_sent_at else '' }}
+                    {% else %}
+                    ❌ Не отправлено
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
