@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход — InGarage AI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/admin/static/pico.min.css">
     <link rel="stylesheet" href="/admin/static/style.css">
+    <script>
+        (function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+    </script>
 </head>
 <body class="login-body">
     <main class="login-container">
         <div class="login-card">
-            <h1>InGarage <span style="color: #e8ff47;">AI</span></h1>
+            <h1 class="brand-name">🚗 InGarage AI</h1>
             <p class="login-subtitle">Панель управления автосервисом</p>
 
             {% if error %}
@@ -39,7 +41,7 @@
                 <details class="dev-login">
                     <summary>Вход по Telegram ID (для разработки)</summary>
                     <form action="/admin/auth/telegram" method="post" class="dev-login-form">
-                        <label for="id">Telegram ID</label>
+                        <label for="id">Telegram ID:</label>
                         <input type="text" name="id" id="id" placeholder="75524586" required>
                         <input type="hidden" name="hash" value="dev_bypass">
                         <input type="hidden" name="auth_date" value="0">

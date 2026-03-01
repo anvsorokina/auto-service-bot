@@ -1,45 +1,54 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Панель управления{% endblock %} — InGarage AI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <title>{% block title %}Панель управления{% endblock %} — АвтоСервис Бот</title>
+    <link rel="stylesheet" href="/admin/static/pico.min.css">
     <link rel="stylesheet" href="/admin/static/style.css">
+    <script>
+        // Apply saved theme immediately to prevent flash
+        (function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+    </script>
     <script src="/admin/static/htmx.min.js"></script>
 </head>
 <body>
+    <!-- Sidebar overlay (closes sidebar when tapping outside on mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
     <div class="admin-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>{{ shop.name if shop else 'InGarage' }} <span class="accent">AI</span></h2>
+                <h2 class="brand-name">🚗 InGarage AI</h2>
+                {% if shop and shop.name %}
+                <p style="margin:0.3rem 0 0;font-size:0.78rem;color:var(--gray-400);">{{ shop.name }}</p>
+                {% endif %}
             </div>
             <nav>
                 <ul>
                     <li>
-                        <a href="/admin/conversations" class="{% if active_page == 'conversations' %}active{% endif %}">
+                        <a href="/admin/conversations" class="{% if active_page == 'conversations' %}active{% endif %}" onclick="closeSidebar()">
                             👥 Клиенты
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/pricing" class="{% if active_page == 'pricing' %}active{% endif %}">
+                        <a href="/admin/pricing" class="{% if active_page == 'pricing' %}active{% endif %}" onclick="closeSidebar()">
                             💰 Цены
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/schedule" class="{% if active_page == 'schedule' %}active{% endif %}">
+                        <a href="/admin/schedule" class="{% if active_page == 'schedule' %}active{% endif %}" onclick="closeSidebar()">
                             📅 Расписание
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/settings" class="{% if active_page == 'settings' %}active{% endif %}">
+                        <a href="/admin/settings" class="{% if active_page == 'settings' %}active{% endif %}" onclick="closeSidebar()">
                             ⚙️ Настройки
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/dashboard" class="{% if active_page == 'dashboard' %}active{% endif %}">
+                        <a href="/admin/dashboard" class="{% if active_page == 'dashboard' %}active{% endif %}" onclick="closeSidebar()">
                             📊 Аналитика
                         </a>
                     </li>
@@ -47,12 +56,16 @@
             </nav>
             <div class="sidebar-footer">
                 <a href="/admin/logout" class="logout-link">Выйти</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
             </div>
         </aside>
 
         <!-- Main content -->
         <main class="main-content">
             <header class="page-header">
+                <!-- Hamburger button (visible on mobile only) -->
+                <button class="hamburger-btn" id="hamburger-btn" onclick="openSidebar()" aria-label="Открыть меню">&#9776;</button>
+
                 <h1>{% block page_title %}{% endblock %}</h1>
                 <div class="header-actions">
                     {% block header_actions %}{% endblock %}
@@ -60,7 +73,7 @@
             </header>
 
             {% if messages %}
-            <div class="messages">
+            <div class="messages" style="padding: 0 1.5rem;">
                 {% for msg in messages %}
                 <div class="alert alert-{{ msg.type }}">{{ msg.text }}</div>
                 {% endfor %}
