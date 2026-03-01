@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     llm_model: str = "claude-sonnet-4-20250514"
     llm_max_tokens: int = 300
 
+    # Landing page — Telegram notifications for demo requests
+    landing_tg_bot_token: str = ""
+    landing_tg_chat_id: int = 0
+
     # Session
     session_ttl_seconds: int = 7200  # 2 hours
 

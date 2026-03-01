@@ -5,9 +5,11 @@ import pathlib
 import structlog
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.api.v1.admin import router as admin_router
+from src.api.v1.landing import router as landing_router
 from src.api.v1.leads import router as leads_router
 from src.api.webhooks.telegram import router as telegram_router
 from src.api.webhooks.whatsapp import router as whatsapp_router
@@ -19,7 +21,6 @@ from src.admin.views.schedule import router as admin_schedule_router
 from src.admin.views.dashboard import router as admin_dashboard_router
 from src.admin.views.conversations import router as admin_conversations_router
 from src.admin.views.chat import router as admin_chat_router
-from src.landing.router import router as landing_router
 from src.config import settings
 
 structlog.configure(
@@ -70,6 +71,7 @@ app.mount("/admin/static", StaticFiles(directory=str(_admin_static)), name="admi
 app.include_router(telegram_router)
 app.include_router(whatsapp_router)
 app.include_router(leads_router)
+app.include_router(landing_router)
 app.include_router(admin_router)
 app.include_router(admin_panel_router)
 app.include_router(admin_leads_router)
@@ -79,4 +81,12 @@ app.include_router(admin_schedule_router)
 app.include_router(admin_dashboard_router)
 app.include_router(admin_conversations_router)
 app.include_router(admin_chat_router)
-app.include_router(landing_router)
+
+
+_landing_html = pathlib.Path(__file__).parent / "landing" / "index.html"
+
+
+@app.get("/")
+async def root():
+    """Serve landing page."""
+    return FileResponse(str(_landing_html), media_type="text/html")
