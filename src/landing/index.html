@@ -290,59 +290,6 @@
     border-top: 1px solid var(--border);
   }
 
-  /* TRY BOT CTA */
-  .try-bot-section {
-    background: linear-gradient(135deg, rgba(255,92,53,0.1), rgba(232,255,71,0.05));
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 60px 48px;
-    text-align: center;
-    margin: 80px 0;
-  }
-
-  .try-bot-section h3 {
-    font-size: 2rem;
-    margin-bottom: 16px;
-  }
-
-  .try-bot-section p {
-    font-size: 1.05rem;
-    color: var(--muted);
-    margin-bottom: 32px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .try-bot-buttons {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .btn-try-bot {
-    background: transparent;
-    border: 1.5px solid var(--accent);
-    color: var(--accent);
-
-    font-weight: 700;
-    font-size: 0.9rem;
-    padding: 16px 32px;
-    border-radius: 100px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-try-bot:hover {
-    background: rgba(232,255,71,0.1);
-    transform: translateY(-2px);
-  }
-
   /* PROBLEM STAT */
   .problem-stat {
     background: rgba(255,92,53,0.1);
@@ -925,8 +872,6 @@
     .pricing-grid { grid-template-columns: 1fr; }
     .pricing-card.featured { transform: scale(1); }
     .cta-section { padding: 72px 24px; }
-    .try-bot-section { padding: 40px 24px; }
-    .try-bot-section h3 { font-size: 1.5rem; }
     .demo-form { padding: 28px 20px; }
     .form-row { grid-template-columns: 1fr; }
     footer { flex-direction: column; align-items: flex-start; padding: 36px 24px; }
@@ -1021,26 +966,6 @@
         <span class="problem-icon">🚪</span>
         <h3 id="prob3-h">Постоянный клиент ушёл молча</h3>
         <p id="prob3-p">В прошлый раз, когда ему срочно нужна была помощь, он ждал вашего ответа 4 часа. А у конкурента ответили за минуту.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section class="how-bg" id="how">
-  <div class="section-inner">
-    <div class="try-bot-section" id="try-bot">
-      <h3 id="try-bot-h">Хотите увидеть в деле?</h3>
-      <p id="try-bot-p">Напишите нашему боту в Telegram или WhatsApp и сами убедитесь, как он отвечает клиентам. Никаких обязательств.</p>
-      <div class="try-bot-buttons">
-        <a href="https://t.me/InGarage_AI_bot" class="btn-try-bot" target="_blank">
-          <span>📱</span>
-          <span id="try-bot-tg">Попробовать в Telegram</span>
-        </a>
-        <a href="https://wa.me/ingarageaibot?text=Привет" class="btn-try-bot" target="_blank">
-          <span>💬</span>
-          <span id="try-bot-wa">Попробовать в WhatsApp</span>
-        </a>
       </div>
     </div>
   </div>
@@ -1323,10 +1248,6 @@ const t = {
     'prob2-p': 'Клиент не хочет звонить и сообщение тонет в чате. Через день отвечать уже неловко, а через два — бессмысленно.',
     'prob3-h': 'Постоянный клиент ушёл молча',
     'prob3-p': 'В прошлый раз, когда ему срочно нужна была помощь, он ждал вашего ответа 4 часа. А у конкурента ответили за минуту.',
-    'try-bot-h': 'Хотите увидеть в деле?',
-    'try-bot-p': 'Напишите нашему боту в Telegram или WhatsApp и сами убедитесь, как он отвечает клиентам. Никаких обязательств.',
-    'try-bot-tg': 'Попробовать в Telegram',
-    'try-bot-wa': 'Попробовать в WhatsApp',
     'tag-how': 'Как это работает',
     'title-how': 'Три шага к сервису, который не теряет клиентов',
     'sub-how': 'Никакого сложного внедрения. Подключили мессенджер, настроили расписание и прайс — AI сразу начинает работать.',
@@ -1444,10 +1365,6 @@ const t = {
     'prob2-p': 'The customer doesn\'t want to call, and the message gets buried in chat. A day later it feels awkward to reply. Two days later — pointless.',
     'prob3-h': 'A loyal customer left without a word',
     'prob3-p': 'Last time they urgently needed help, they waited 4 hours for your reply. A competitor answered in one minute.',
-    'try-bot-h': 'Want to see it work?',
-    'try-bot-p': 'Message our bot on Telegram or WhatsApp and see for yourself how it handles customer inquiries. No commitments.',
-    'try-bot-tg': 'Try on Telegram',
-    'try-bot-wa': 'Try on WhatsApp',
     'tag-how': 'How it works',
     'title-how': 'Three steps to a shop that never loses leads',
     'sub-how': 'No complex setup. Connect your messenger, set your schedule and prices — AI gets to work immediately.',
