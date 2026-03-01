@@ -1,8 +1,18 @@
 """Test fixtures and configuration."""
 
+import os
 import pytest
 import uuid
 from unittest.mock import AsyncMock, MagicMock
+
+# Set test environment variables before importing app modules
+os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://test:test@localhost:5432/test")
+os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
+os.environ.setdefault("ANTHROPIC_API_KEY", "sk-ant-test-key")
+os.environ.setdefault("TELEGRAM_WEBHOOK_BASE_URL", "https://test.example.com")
+os.environ.setdefault("TELEGRAM_WEBHOOK_SECRET", "test-webhook-secret")
+os.environ.setdefault("ADMIN_SECRET_KEY", "test-admin-secret-key")
+os.environ.setdefault("ENVIRONMENT", "development")
 
 from src.conversation.engine import ConversationEngine
 from src.conversation.session import SessionManager

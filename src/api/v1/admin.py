@@ -2,7 +2,8 @@
 
 import structlog
 from aiogram import Bot
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi.security import APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.bot.factory import get_or_create_bot
@@ -15,10 +16,22 @@ logger = structlog.get_logger()
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
+_api_key_header = APIKeyHeader(name="X-Admin-Key", auto_error=False)
+
+
+async def require_admin_key(
+    api_key: str | None = Security(_api_key_header),
+) -> str:
+    """Validate the admin API key from X-Admin-Key header."""
+    if not api_key or api_key != settings.admin_secret_key:
+        raise HTTPException(status_code=403, detail="Invalid or missing API key")
+    return api_key
+
 
 @router.post("/shops", response_model=ShopResponse)
 async def create_shop(
     data: ShopCreate,
+    _key: str = Depends(require_admin_key),
     db: AsyncSession = Depends(get_db),
 ) -> ShopResponse:
     """Create a new shop and register its Telegram webhook.
