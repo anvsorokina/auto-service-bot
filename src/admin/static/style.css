@@ -1,7 +1,5 @@
 /* InGarage AI Admin Panel — Light & Dark Themes */
-
-@import url('https://fonts.cdnfonts.com/css/proxima-nova-2');
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap');
+/* Fonts loaded via <link> in base.html for reliability */
 
 /* ====== Light Theme (default) ====== */
 
@@ -46,6 +44,10 @@
 
     --font-body: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-brand: 'Syne', sans-serif;
+
+    /* Override Pico CSS font variables so our fonts take effect */
+    --pico-font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --pico-font-family-sans-serif: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* ====== Dark Theme ====== */
@@ -83,6 +85,10 @@
     --chat-bot-border: #2d3140;
     --chat-master-bg: rgba(22, 163, 74, 0.15);
     --chat-master-border: rgba(22, 163, 74, 0.3);
+
+    /* Override Pico CSS font variables in dark theme too */
+    --pico-font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --pico-font-family-sans-serif: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Dark theme badge overrides */
@@ -116,7 +122,7 @@
 /* ====== Global Typography ====== */
 
 body, html {
-    font-family: var(--font-body);
+    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     background: var(--bg-body);
     color: var(--text-primary);
 }
@@ -126,8 +132,14 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
 }
 
-.brand-name {
-    font-family: var(--font-brand);
+input, select, textarea, button {
+    font-family: var(--font-body) !important;
+}
+
+.brand-name,
+.sidebar-header h2,
+.login-card h1 {
+    font-family: 'Syne', sans-serif !important;
     font-weight: 700;
 }
 
@@ -937,18 +949,18 @@ h1, h2, h3, h4, h5, h6 {
 
     /* --- Sidebar: hidden off-screen, slides in on demand --- */
     .sidebar {
-        transform: translateX(-100%);
+        transform: translateX(-100%) !important;
         width: var(--sidebar-width);
         box-shadow: var(--shadow-md);
     }
 
     .sidebar.sidebar-open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
     }
 
     /* --- Main content: full width on mobile --- */
     .main-content {
-        margin-left: 0;
+        margin-left: 0 !important;
     }
 
     /* --- Hamburger: visible on mobile --- */

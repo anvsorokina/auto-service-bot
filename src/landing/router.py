@@ -2,8 +2,8 @@
 
 import pathlib
 
+import httpx
 import structlog
-from aiogram import Bot
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -20,6 +20,8 @@ router = APIRouter()
 
 TEMPLATES_DIR = pathlib.Path(__file__).parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+
+_TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 
 
 class DemoRequestIn(BaseModel):
@@ -74,24 +76,36 @@ async def create_demo_request(
         country=data.country,
     )
 
-    # Send Telegram notification to platform owner
-    if settings.demo_notify_telegram_bot_token and settings.demo_notify_telegram_chat_id:
+    # Send Telegram notification to platform owner via direct HTTP call
+    token = settings.landing_tg_bot_token
+    chat_id = settings.landing_tg_chat_id
+
+    if token and chat_id:
         try:
-            bot = Bot(token=settings.demo_notify_telegram_bot_token)
             text = DEMO_NOTIFICATION_TEMPLATE.format(
                 name=data.name,
                 shop_name=data.shop_name,
                 contact=data.contact,
                 country=COUNTRY_NAMES.get(data.country, data.country),
             )
-            await bot.send_message(
-                chat_id=int(settings.demo_notify_telegram_chat_id),
-                text=text,
-                parse_mode="HTML",
-            )
-            await bot.session.close()
-            logger.info("demo_notification_sent", chat_id=settings.demo_notify_telegram_chat_id)
+            url = _TELEGRAM_API.format(token=token)
+            payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
+
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(url, json=payload)
+                resp.raise_for_status()
+                result = resp.json()
+                if not result.get("ok"):
+                    raise ValueError(f"Telegram API returned not-ok: {result}")
+
+            logger.info("demo_notification_sent", chat_id=chat_id)
         except Exception as e:
             logger.error("demo_notification_failed", error=str(e))
+    else:
+        logger.warning(
+            "demo_notification_skipped_no_config",
+            has_token=bool(token),
+            has_chat_id=bool(chat_id),
+        )
 
     return {"status": "ok", "id": str(demo_req.id)}

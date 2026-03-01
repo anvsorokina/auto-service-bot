@@ -3,8 +3,8 @@
 import time
 from collections import defaultdict
 
+import httpx
 import structlog
-from aiogram import Bot
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
@@ -16,6 +16,8 @@ router = APIRouter(prefix="/api/landing", tags=["landing"])
 # Simple per-IP rate limit: 1 request per 60 seconds
 _last_request: dict[str, float] = defaultdict(float)
 _COOLDOWN = 60
+
+_TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 
 
 class DemoRequest(BaseModel):
@@ -44,6 +46,17 @@ async def submit_demo_request(body: DemoRequest, request: Request):
         raise HTTPException(status_code=429, detail="Подождите минуту перед повторной отправкой")
     _last_request[ip] = now
 
+    token = settings.landing_tg_bot_token
+    chat_id = settings.landing_tg_chat_id
+
+    if not token or not chat_id:
+        logger.error(
+            "landing_telegram_not_configured",
+            has_token=bool(token),
+            has_chat_id=bool(chat_id),
+        )
+        raise HTTPException(status_code=500, detail="Не удалось отправить заявку")
+
     country = COUNTRY_NAMES.get(body.country, body.country)
     text = (
         "🔔 <b>Новая заявка с лендинга</b>\n\n"
@@ -53,18 +66,22 @@ async def submit_demo_request(body: DemoRequest, request: Request):
         f"🌍 <b>Страна:</b> {country}\n"
     )
 
+    url = _TELEGRAM_API.format(token=token)
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+    }
+
     try:
-        bot = Bot(token=settings.landing_tg_bot_token)
-        try:
-            await bot.send_message(
-                chat_id=settings.landing_tg_chat_id,
-                text=text,
-                parse_mode="HTML",
-            )
-        finally:
-            await bot.session.close()
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(url, json=payload)
+            resp.raise_for_status()
+            result = resp.json()
+            if not result.get("ok"):
+                raise ValueError(f"Telegram API error: {result}")
     except Exception as e:
-        logger.error("landing_telegram_send_error", error=str(e))
+        logger.error("landing_telegram_send_error", error=str(e), url=url, chat_id=chat_id)
         raise HTTPException(status_code=500, detail="Не удалось отправить заявку") from e
 
     logger.info("landing_demo_request", name=body.name, shop=body.shop_name, country=body.country)

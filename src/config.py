@@ -34,15 +34,12 @@ class Settings(BaseSettings):
     llm_max_tokens: int = 300
 
     # Landing page — Telegram notifications for demo requests
+    # Railway env vars: LANDING_TG_BOT_TOKEN, LANDING_TG_CHAT_ID
     landing_tg_bot_token: str = ""
-    landing_tg_chat_id: int = 0
+    landing_tg_chat_id: str = ""
 
     # Session
     session_ttl_seconds: int = 7200  # 2 hours
-
-    # Landing page demo notifications (platform owner)
-    demo_notify_telegram_bot_token: str = ""
-    demo_notify_telegram_chat_id: str = ""
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
