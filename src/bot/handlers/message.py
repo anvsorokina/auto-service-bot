@@ -13,10 +13,63 @@ logger = structlog.get_logger()
 
 # Demo message limit for non-owner users
 DEMO_MESSAGE_LIMIT = 5
+DAILY_NEW_USERS_LIMIT = 100
 DEMO_LIMIT_TEXT = (
     "Для тестирования доступно только пять сообщений. "
     "Запишись на демо нашей CRM и мы покажем тебе как легко настраивается бот!"
 )
+DAILY_LIMIT_TEXT = (
+    "К сожалению, сейчас бот перегружен. "
+    "Попробуйте позже или запишитесь на демо — мы покажем всё лично!"
+)
+
+
+async def _check_daily_new_users_limit(user_id: str, owner_telegram_id: Optional[int]) -> bool:
+    """Check if we've exceeded the daily new users cap (anti-abuse).
+
+    Returns True if the user is allowed, False if blocked.
+    Already-seen users and the owner are always allowed.
+    """
+    if owner_telegram_id and str(owner_telegram_id) == user_id:
+        return True
+
+    redis = await get_redis()
+
+    # If this user already has a message counter, they're not new — allow
+    existing = await redis.exists(f"demo_msg_count:{user_id}")
+    if existing:
+        return True
+
+    # Check daily new users counter
+    from datetime import date
+    daily_key = f"demo_daily_new_users:{date.today().isoformat()}"
+    count = await redis.get(daily_key)
+
+    if count is not None and int(count) >= DAILY_NEW_USERS_LIMIT:
+        logger.warning("daily_new_users_limit_reached", user_id=user_id, count=int(count))
+        return False
+
+    return True
+
+
+async def _increment_daily_new_users(user_id: str, owner_telegram_id: Optional[int]) -> None:
+    """Register a new user in the daily counter (called once per new user)."""
+    if owner_telegram_id and str(owner_telegram_id) == user_id:
+        return
+
+    redis = await get_redis()
+
+    # Only increment if this is a truly new user (no existing counter)
+    existing = await redis.exists(f"demo_msg_count:{user_id}")
+    if existing:
+        return
+
+    from datetime import date
+    daily_key = f"demo_daily_new_users:{date.today().isoformat()}"
+    pipe = redis.pipeline()
+    pipe.incr(daily_key)
+    pipe.expire(daily_key, 86400 * 2)  # Expire after 2 days (safety margin)
+    await pipe.execute()
 
 
 async def _check_demo_limit(
@@ -86,6 +139,12 @@ async def handle_message(
         text_preview=message.text[:50],
     )
 
+    # Check daily new users limit (anti-abuse: max 100 new users/day)
+    daily_ok = await _check_daily_new_users_limit(user_id, owner_telegram_id)
+    if not daily_ok:
+        await message.answer(DAILY_LIMIT_TEXT)
+        return
+
     # Check demo message limit (skip for /start so users get the greeting)
     lower_text = message.text.lower().strip()
     if lower_text not in ("/start", "start", "начать"):
@@ -117,6 +176,9 @@ async def handle_message(
         )
         return
 
+    # Register new user in daily counter (before incrementing msg count)
+    await _increment_daily_new_users(user_id, owner_telegram_id)
+
     # Increment demo counter after successful processing
     await _increment_demo_count(user_id, owner_telegram_id)
 
@@ -145,6 +207,14 @@ async def handle_callback(
 
     user_id = str(callback.from_user.id)
     owner_telegram_id = (shop_config or {}).get("owner_telegram_id")
+
+    # Check daily new users limit
+    daily_ok = await _check_daily_new_users_limit(user_id, owner_telegram_id)
+    if not daily_ok:
+        await callback.answer()
+        if callback.message:
+            await callback.message.answer(DAILY_LIMIT_TEXT)
+        return
 
     # Check demo limit for callbacks too
     allowed = await _check_demo_limit(user_id, owner_telegram_id)
