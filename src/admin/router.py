@@ -16,6 +16,7 @@ from src.admin.auth import (
     verify_telegram_login,
 )
 from src.admin.dependencies import get_current_shop
+from src.config import settings
 from src.database import get_db
 from src.models.shop import Shop
 from src.redis_client import get_redis
@@ -81,8 +82,11 @@ async def telegram_auth(
             "error": "Мастерская не найдена. Убедитесь, что ваш Telegram ID привязан к мастерской.",
         })
 
-    # Verify Telegram login hash (skip in dev mode with auth_date=0)
-    is_dev_login = str(auth_data.get("auth_date", "")) == "0"
+    # Verify Telegram login hash (dev bypass only in development environment)
+    is_dev_login = (
+        str(auth_data.get("auth_date", "")) == "0"
+        and settings.environment == "development"
+    )
     if shop.telegram_bot_token and not is_dev_login:
         if not verify_telegram_login(auth_data, shop.telegram_bot_token):
             logger.warning("admin_login_invalid_hash", telegram_id=telegram_id)
@@ -143,7 +147,10 @@ async def telegram_auth_get(
     if not shop:
         return RedirectResponse(url="/admin/login?error=shop_not_found")
 
-    is_dev_login = str(auth_data.get("auth_date", "")) == "0"
+    is_dev_login = (
+        str(auth_data.get("auth_date", "")) == "0"
+        and settings.environment == "development"
+    )
     if shop.telegram_bot_token and not is_dev_login:
         if not verify_telegram_login(auth_data, shop.telegram_bot_token):
             return RedirectResponse(url="/admin/login?error=invalid_hash")

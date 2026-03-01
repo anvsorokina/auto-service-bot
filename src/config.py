@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     # Telegram
     telegram_webhook_base_url: str
-    telegram_webhook_secret: str = "default-secret"
+    telegram_webhook_secret: str
 
     # Twilio (WhatsApp)
     twilio_account_sid: str = ""
@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     environment: str = "development"
 
-    # Admin panel
-    admin_secret_key: str = "change-me-in-production-secret-key"
+    # Admin panel — used as API key for /api/v1/admin/* endpoints
+    admin_secret_key: str
 
     # LLM
     llm_model: str = "claude-sonnet-4-20250514"

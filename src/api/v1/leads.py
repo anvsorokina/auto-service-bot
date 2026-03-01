@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.api.v1.admin import require_admin_key
 from src.database import get_db
 from src.models.lead import Lead
 
@@ -18,6 +19,7 @@ router = APIRouter(prefix="/api/v1", tags=["leads"])
 @router.get("/leads")
 async def list_leads(
     shop_id: str,
+    _key: str = Depends(require_admin_key),
     status: Optional[str] = Query(None, description="Filter by status"),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
