@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import structlog
@@ -26,7 +26,7 @@ from src.conversation.steps.greeting import GreetingStep
 from src.conversation.steps.problem import ProblemStep
 from src.llm.unified import current_shop_config, process_message
 from src.models.conversation import Conversation, Message
-from src.models.lead import Lead
+from src.models.lead import Appointment, Lead
 from src.pricing.engine import PricingEngine
 from src.schemas.conversation import ConversationStep, SessionState
 
@@ -798,6 +798,25 @@ class ConversationEngine:
 
             state.lead_id = str(lead.id)
 
+            # Create Appointment if preferred_time is set
+            if collected.preferred_time:
+                scheduled = self._parse_preferred_time(collected.preferred_time)
+                if scheduled:
+                    appointment = Appointment(
+                        shop_id=uuid.UUID(state.shop_id),
+                        lead_id=lead.id,
+                        scheduled_at=scheduled,
+                        duration_minutes=60,
+                        status="pending",
+                    )
+                    self.db.add(appointment)
+                    await self.db.flush()
+                    logger.info(
+                        "appointment_created",
+                        lead_id=str(lead.id),
+                        scheduled_at=scheduled.isoformat(),
+                    )
+
             logger.info(
                 "lead_created",
                 lead_id=str(lead.id),
@@ -820,6 +839,55 @@ class ConversationEngine:
                 await self.db.rollback()
             except Exception:
                 pass
+
+    # ─── Time parsing ─────────────────────────────────────────────────
+
+    @staticmethod
+    def _parse_preferred_time(text: str) -> Optional[datetime]:
+        """Parse preferred_time text into a datetime.
+
+        Handles patterns like:
+          - "сегодня в 17:00", "сегодня в 17"
+          - "завтра в 10:00", "завтра в 10"
+          - "17:00", "17"
+          - ISO formats
+        Returns None if parsing fails.
+        """
+        import re as _re
+
+        text = text.lower().strip()
+        now = datetime.now(timezone.utc)
+
+        # Determine day
+        if "завтра" in text:
+            day = now.date() + timedelta(days=1)
+        elif "послезавтра" in text:
+            day = now.date() + timedelta(days=2)
+        else:
+            day = now.date()  # default to today
+
+        # Extract hour:minute
+        m = _re.search(r"(\d{1,2})[:\.](\d{2})", text)
+        if m:
+            hour, minute = int(m.group(1)), int(m.group(2))
+        else:
+            m = _re.search(r"в\s*(\d{1,2})", text)
+            if m:
+                hour, minute = int(m.group(1)), 0
+            else:
+                m = _re.search(r"^(\d{1,2})$", text.strip())
+                if m:
+                    hour, minute = int(m.group(1)), 0
+                else:
+                    return None
+
+        if not (0 <= hour <= 23 and 0 <= minute <= 59):
+            return None
+
+        try:
+            return datetime(day.year, day.month, day.day, hour, minute, tzinfo=timezone.utc)
+        except ValueError:
+            return None
 
     # ─── Lead status update ──────────────────────────────────────────
 
@@ -852,11 +920,27 @@ class ConversationEngine:
             )
 
             # Update conversation to completed
+            conv_values: dict = {"status": "completed", "completed_at": now}
+            if collected.preferred_time:
+                conv_values["preferred_time"] = collected.preferred_time
             await self.db.execute(
                 sa_update(Conversation)
                 .where(Conversation.id == uuid.UUID(state.conversation_id))
-                .values(status="completed", completed_at=now)
+                .values(**conv_values)
             )
+
+            # Create Appointment if preferred_time is set
+            if collected.preferred_time:
+                scheduled = self._parse_preferred_time(collected.preferred_time)
+                if scheduled:
+                    appointment = Appointment(
+                        shop_id=uuid.UUID(state.shop_id),
+                        lead_id=uuid.UUID(state.lead_id),
+                        scheduled_at=scheduled,
+                        duration_minutes=60,
+                        status="pending",
+                    )
+                    self.db.add(appointment)
 
             await self.db.flush()
 
