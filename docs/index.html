@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InGarage AI — AI-менеджер для автосервиса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f3ee;
+    --accent: #e8ff47;
+    --accent2: #ff5c35;
+    --gray: #1a1a1a;
+    --gray2: #2a2a2a;
+    --muted: #888;
+    --border: rgba(255,255,255,0.08);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, .logo { font-family: 'Syne', sans-serif; font-weight: 700; }
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+  .lang-toggle {
+    display: flex;
+    background: var(--gray2);
+    border-radius: 100px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .lang-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 6px 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active { background: var(--accent); color: var(--black); }
+  .nav-cta {
+    background: var(--accent);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    padding: 10px 22px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,255,71,0.35); }
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 40%, rgba(232,255,71,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(255,92,53,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,255,71,0.1);
+    border: 1px solid rgba(232,255,71,0.2);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    width: fit-content;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 44px;
+    max-width: 480px;
+  }
+  .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 16px 32px;
+    border-radius: 100px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(232,255,71,0.4); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 16px 32px;
+    border-radius: 100px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.04); }
+  .hero-visual { position: relative; }
+  .chat-mockup {
+    background: var(--gray);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+  .chat-header {
+    background: var(--gray2);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .chat-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #a8ff3e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .chat-info strong { font-family: 'Syne', sans-serif; font-size: 0.85rem; display: block; }
+  .chat-status {
+    font-size: 0.72rem;
+    color: #4ade80;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chat-status::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: pulse 2s infinite;
+  }
+  .chat-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 280px;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 10px 16px;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    animation: fadeUp 0.4s ease forwards;
+    opacity: 0;
+  }
+  .msg.client {
+    background: var(--gray2);
+    color: var(--white);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg.ai {
+    background: var(--accent);
+    color: var(--black);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    font-weight: 500;
+  }
+  .msg-time { font-size: 0.65rem; color: var(--muted); margin-top: 4px; text-align: right; }
+  .msg.client .msg-time { text-align: left; }
+  .msg:nth-child(1) { animation-delay: 0.3s; }
+  .msg:nth-child(2) { animation-delay: 1s; }
+  .msg:nth-child(3) { animation-delay: 1.7s; }
+  .msg:nth-child(4) { animation-delay: 2.4s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .crm-badge {
+    position: absolute;
+    bottom: -16px; right: -16px;
+    background: var(--accent2);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 100px;
+    box-shadow: 0 8px 24px rgba(255,92,53,0.4);
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .stats {
+    padding: 60px 48px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stats-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-label { font-size: 0.9rem; color: var(--muted); }
+  section { padding: 100px 48px; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+  .section-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .section-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 60px;
+  }
+  .problems-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .problem-card {
+    background: var(--gray);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .problem-card:hover { border-color: rgba(255,92,53,0.3); transform: translateY(-4px); }
+  .problem-icon { font-size: 2rem; margin-bottom: 20px; display: block; }
+  .problem-card h3 { font-size: 1rem; margin-bottom: 10px; }
+  .problem-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+  .how-bg { background: var(--gray); }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .step { background: var(--gray); padding: 48px 36px; }
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    color: rgba(232,255,71,0.12);
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .step h3 { font-size: 1.1rem; margin-bottom: 12px; }
+  .step p { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .feature-card {
+    background: var(--gray);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .feature-card:hover { border-color: rgba(232,255,71,0.2); transform: translateY(-4px); }
+  .feature-card.wide {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: rgba(232,255,71,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  .feature-card h3 { font-size: 1.15rem; margin-bottom: 12px; }
+  .feature-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+  .feature-tag {
+    display: inline-block;
+    background: rgba(255,92,53,0.15);
+    color: var(--accent2);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .admin-panel {
+    background: var(--gray2);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .admin-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .admin-row {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .admin-row.highlight {
+    background: rgba(232,255,71,0.1);
+    border: 1px solid rgba(232,255,71,0.2);
+  }
+  .cta-section {
+    background: var(--accent);
+    color: var(--black);
+    padding: 100px 48px;
+  }
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .cta-section h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 20px;
+    color: var(--black);
+  }
+  .cta-section p {
+    font-size: 1rem;
+    color: rgba(0,0,0,0.6);
+    margin-bottom: 48px;
+    line-height: 1.6;
+  }
+  .demo-form {
+    background: rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: left;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(0,0,0,0.6);
+    text-transform: uppercase;
+  }
+  .form-group input, .form-group select {
+    background: rgba(255,255,255,0.5);
+    border: 1.5px solid rgba(0,0,0,0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+  }
+  .form-group input::placeholder { color: rgba(0,0,0,0.35); }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--black);
+    background: rgba(255,255,255,0.8);
+  }
+  .form-submit {
+    background: var(--black);
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    padding: 18px 40px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .form-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+  .form-disclaimer {
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(0,0,0,0.45);
+    margin-top: 16px;
+  }
+  .form-success {
+    display: none;
+    text-align: center;
+    padding: 48px 20px;
+  }
+  .success-icon { font-size: 3rem; margin-bottom: 16px; }
+  .form-success h3 { font-size: 1.5rem; margin-bottom: 12px; color: var(--black); }
+  .form-success p { color: rgba(0,0,0,0.6); font-size: 0.95rem; }
+  footer {
+    background: var(--black);
+    border-top: 1px solid var(--border);
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-links { display: flex; gap: 32px; }
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--white); }
+  .footer-copy { font-size: 0.8rem; color: var(--muted); }
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-cta { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    .hero-visual { order: -1; }
+    .crm-badge { right: 0; }
+    .stats { padding: 48px 24px; }
+    .stats-inner { grid-template-columns: 1fr; gap: 32px; }
+    section { padding: 72px 24px; }
+    .problems-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
+    .feature-card.wide { grid-column: span 1; grid-template-columns: 1fr; gap: 24px; }
+    .cta-section { padding: 72px 24px; }
+    .demo-form { padding: 28px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; align-items: flex-start; padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="logo">InGarage <span>AI</span></a>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+      <button class="lang-btn active" onclick="setLang('ru')" id="btn-ru">RU</button>
+    </div>
+    <a href="#demo" class="nav-cta" id="nav-cta-text">Записаться на демо</a>
+  </div>
+</nav>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid">
+    <div>
+      <div class="hero-badge" id="hero-badge">AI-менеджер для автосервисов</div>
+      <h1 id="hero-h1">Ваши клиенты пишут.<br><em>AI отвечает.</em><br>Заявка в CRM.</h1>
+      <p class="hero-sub" id="hero-sub">InGarage AI принимает сообщения в WhatsApp и Telegram как живой менеджер — мгновенно, круглосуточно, без пропущенных заявок. Вы не теряете клиентов, даже когда мастер занят или не берёт трубку.</p>
+      <div class="hero-ctas">
+        <a href="#demo" class="btn-primary" id="btn-hero-demo">Получить демо</a>
+        <a href="#how" class="btn-secondary" id="btn-hero-how">Как это работает</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="chat-mockup">
+        <div class="chat-header">
+          <div class="chat-avatar">🤖</div>
+          <div class="chat-info">
+            <strong>InGarage AI</strong>
+            <div class="chat-status" id="chat-status">Онлайн • Отвечает мгновенно</div>
+          </div>
+        </div>
+        <div class="chat-body">
+          <div class="msg client">
+            <span id="msg1">Привет, сколько стоит замена масла на Camry 2020?</span>
+            <div class="msg-time">22:47</div>
+          </div>
+          <div class="msg ai">
+            <span id="msg2">Добрый вечер! Замена масла на Camry 2020 — от 3 500 ₽, вместе с фильтром. Записать на завтра?</span>
+            <div class="msg-time">22:47</div>
+          </div>
+          <div class="msg client">
+            <span id="msg3">Да, на 10 утра</span>
+            <div class="msg-time">22:48</div>
+          </div>
+          <div class="msg ai">
+            <span id="msg4">Отлично! Записал на завтра в 10:00. Пришлём напоминание за час. Ваш номер авто?</span>
+            <div class="msg-time">22:48</div>
+          </div>
+        </div>
+      </div>
+      <div class="crm-badge" id="crm-badge">✓ Заявка в CRM</div>
+    </div>
+  </div>
+</section>
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label" id="stat1">Приём заявок без выходных</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">&lt;5с</div>
+      <div class="stat-label" id="stat2">Среднее время ответа</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0</div>
+      <div class="stat-label" id="stat3">Пропущенных заявок</div>
+    </div>
+  </div>
+</div>
+<section>
+  <div class="section-inner">
+    <div class="section-tag" id="tag-problem">Проблема</div>
+    <h2 class="section-title" id="title-problem">Почему сервисы теряют деньги каждый день</h2>
+    <p class="section-sub" id="sub-problem">Клиент пишет — мастер не отвечает. Клиент идёт к конкуренту. Это происходит в каждом сервисе каждый день.</p>
+    <div class="problems-grid">
+      <div class="problem-card">
+        <span class="problem-icon">🔇</span>
+        <h3 id="prob1-h">Мастер не берёт трубку</h3>
+        <p id="prob1-p">Руки в масле, под машиной, обед — клиент не дожидается и уходит. Вы теряете заявку, даже не узнав о ней.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">📓</span>
+        <h3 id="prob2-h">Запись в тетрадь — и пропала</h3>
+        <p id="prob2-p">Забыли, потеряли, не передали. Клиент приехал — его «не было в списке». Скандал и потерянный постоянник.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">🌙</span>
+        <h3 id="prob3-h">Ночью и в выходные — тишина</h3>
+        <p id="prob3-p">Клиент пишет в воскресенье вечером. Никто не отвечает. Утром он уже в другом сервисе.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="how-bg" id="how">
+  <div class="section-inner">
+    <div class="section-tag" id="tag-how">Как это работает</div>
+    <h2 class="section-title" id="title-how">Три шага — и ваш сервис работает сам</h2>
+    <p class="section-sub" id="sub-how">Никакого сложного внедрения. Подключили мессенджер, настроили под ваш прайс — и AI начинает работать.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3 id="step1-h">Клиент пишет в WhatsApp или Telegram</h3>
+        <p id="step1-p">Как обычно — любой вопрос, в любое время суток. AI понимает контекст и историю переписки.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3 id="step2-h">AI отвечает как живой менеджер</h3>
+        <p id="step2-p">Консультирует по ценам и услугам, уточняет детали, записывает на удобное время. Без скриптов-роботов.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3 id="step3-h">Заявка появляется в CRM</h3>
+        <p id="step3-p">Все данные клиента, авто и время визита — в вашей панели. Если нужно — AI зовёт живого менеджера.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="section-inner">
+    <div class="section-tag" id="tag-feat">Возможности</div>
+    <h2 class="section-title" id="title-feat">Всё, что нужно владельцу сервиса</h2>
+    <p class="section-sub" id="sub-feat">От первого сообщения клиента до записи в CRM — один инструмент.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3 id="feat1-h">WhatsApp & Telegram</h3>
+        <p id="feat1-p">Работает в обоих мессенджерах одновременно. Клиент пишет туда, где ему удобно.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3 id="feat2-h">Понимает контекст разговора</h3>
+        <p id="feat2-p">Помнит, что спрашивал клиент раньше. Не задаёт одни и те же вопросы дважды. Звучит как человек.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <h3 id="feat3-h">Эскалация на человека</h3>
+        <p id="feat3-p">Если клиент задаёт сложный вопрос или конфликтует — AI мгновенно уведомит живого менеджера.</p>
+      </div>
+      <div class="feature-card wide">
+        <div>
+          <div class="feature-tag" id="feat4-tag">Кастомизация</div>
+          <h3 id="feat4-h">Полноценная CRM под ваш сервис</h3>
+          <p id="feat4-p">Настроим систему под вас: ваш прайс, ваши услуги, ваш стиль общения. Быстро и без сложных интеграций.</p>
+        </div>
+        <div>
+          <div class="admin-panel">
+            <div class="admin-label" id="admin-label">ПАНЕЛЬ УПРАВЛЕНИЯ</div>
+            <div class="admin-row highlight">
+              <span id="admin-r1">Иванов А. — Замена масла</span>
+              <span style="color:var(--accent)">10:00</span>
+            </div>
+            <div class="admin-row">
+              <span id="admin-r2">Петрова М. — Диагностика</span>
+              <span style="color:var(--muted)">12:30</span>
+            </div>
+            <div class="admin-row">
+              <span id="admin-r3">Сидоров К. — Шиномонтаж</span>
+              <span style="color:var(--muted)">14:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="cta-section" id="demo">
+  <div class="cta-inner">
+    <h2 id="cta-h">Хотите посмотреть, как это работает в вашем сервисе?</h2>
+    <p id="cta-p">Запишитесь на демо — покажем живую работу AI на реальных сценариях вашего бизнеса. Бесплатно, без обязательств.</p>
+    <div class="demo-form">
+      <form id="demoForm" onsubmit="submitForm(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lbl-name">Ваше имя</label>
+            <input type="text" id="inp-name" placeholder="Александр" required>
+          </div>
+          <div class="form-group">
+            <label id="lbl-shop">Название сервиса</label>
+            <input type="text" id="inp-shop" placeholder="Автосервис №1" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lbl-contact">WhatsApp или Telegram</label>
+            <input type="text" id="inp-contact" placeholder="+7 900 000 00 00" required>
+          </div>
+          <div class="form-group">
+            <label id="lbl-country">Страна</label>
+            <select id="inp-country">
+              <option value="ru" id="opt-ru">Россия</option>
+              <option value="kz" id="opt-kz">Казахстан</option>
+              <option value="uz" id="opt-uz">Узбекистан</option>
+              <option value="ge" id="opt-ge">Грузия</option>
+              <option value="other" id="opt-other">Другая</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="form-submit" id="btn-submit">Записаться на демо →</button>
+        <p class="form-disclaimer" id="form-disc">Мы свяжемся с вами в течение 24 часов. Никакого спама.</p>
+      </form>
+      <div class="form-success" id="formSuccess">
+        <div class="success-icon">✅</div>
+        <h3 id="success-h">Заявка принята!</h3>
+        <p id="success-p">Мы свяжемся с вами в течение 24 часов для назначения демо.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <a href="#" class="footer-logo">InGarage <span>AI</span></a>
+  <div class="footer-links">
+    <a href="mailto:hello@ingarage.ai">hello@ingarage.ai</a>
+    <a href="https://t.me/ingarageai" target="_blank">Telegram</a>
+    <a href="https://wa.me/ingarageai" target="_blank">WhatsApp</a>
+  </div>
+  <div class="footer-copy">© 2025 InGarage AI</div>
+</footer>
+<script>
+const t = {
+  ru: {
+    'nav-cta-text': 'Записаться на демо',
+    'hero-badge': 'AI-менеджер для автосервисов',
+    'hero-h1': 'Ваши клиенты пишут.<br><em>AI отвечает.</em><br>Заявка в CRM.',
+    'hero-sub': 'InGarage AI принимает сообщения в WhatsApp и Telegram как живой менеджер — мгновенно, круглосуточно, без пропущенных заявок. Вы не теряете клиентов, даже когда мастер занят или не берёт трубку.',
+    'btn-hero-demo': 'Получить демо',
+    'btn-hero-how': 'Как это работает',
+    'chat-status': 'Онлайн • Отвечает мгновенно',
+    'msg1': 'Привет, сколько стоит замена масла на Camry 2020?',
+    'msg2': 'Добрый вечер! Замена масла на Camry 2020 — от 3 500 ₽, вместе с фильтром. Записать на завтра?',
+    'msg3': 'Да, на 10 утра',
+    'msg4': 'Отлично! Записал на завтра в 10:00. Пришлём напоминание за час. Ваш номер авто?',
+    'crm-badge': '✓ Заявка в CRM',
+    'stat1': 'Приём заявок без выходных',
+    'stat2': 'Среднее время ответа',
+    'stat3': 'Пропущенных заявок',
+    'tag-problem': 'Проблема',
+    'title-problem': 'Почему сервисы теряют деньги каждый день',
+    'sub-problem': 'Клиент пишет — мастер не отвечает. Клиент идёт к конкуренту. Это происходит в каждом сервисе каждый день.',
+    'prob1-h': 'Мастер не берёт трубку',
+    'prob1-p': 'Руки в масле, под машиной, обед — клиент не дожидается и уходит. Вы теряете заявку, даже не узнав о ней.',
+    'prob2-h': 'Запись в тетрадь — и пропала',
+    'prob2-p': 'Забыли, потеряли, не передали. Клиент приехал — его «не было в списке». Скандал и потерянный постоянник.',
+    'prob3-h': 'Ночью и в выходные — тишина',
+    'prob3-p': 'Клиент пишет в воскресенье вечером. Никто не отвечает. Утром он уже в другом сервисе.',
+    'tag-how': 'Как это работает',
+    'title-how': 'Три шага — и ваш сервис работает сам',
+    'sub-how': 'Никакого сложного внедрения. Подключили мессенджер, настроили под ваш прайс — и AI начинает работать.',
+    'step1-h': 'Клиент пишет в WhatsApp или Telegram',
+    'step1-p': 'Как обычно — любой вопрос, в любое время суток. AI понимает контекст и историю переписки.',
+    'step2-h': 'AI отвечает как живой менеджер',
+    'step2-p': 'Консультирует по ценам и услугам, уточняет детали, записывает на удобное время. Без скриптов-роботов.',
+    'step3-h': 'Заявка появляется в CRM',
+    'step3-p': 'Все данные клиента, авто и время визита — в вашей панели. Если нужно — AI зовёт живого менеджера.',
+    'tag-feat': 'Возможности',
+    'title-feat': 'Всё, что нужно владельцу сервиса',
+    'sub-feat': 'От первого сообщения клиента до записи в CRM — один инструмент.',
+    'feat1-h': 'WhatsApp & Telegram',
+    'feat1-p': 'Работает в обоих мессенджерах одновременно. Клиент пишет туда, где ему удобно.',
+    'feat2-h': 'Понимает контекст разговора',
+    'feat2-p': 'Помнит, что спрашивал клиент раньше. Не задаёт одни и те же вопросы дважды. Звучит как человек.',
+    'feat3-h': 'Эскалация на человека',
+    'feat3-p': 'Если клиент задаёт сложный вопрос или конфликтует — AI мгновенно уведомит живого менеджера.',
+    'feat4-tag': 'Кастомизация',
+    'feat4-h': 'Полноценная CRM под ваш сервис',
+    'feat4-p': 'Настроим систему под вас: ваш прайс, ваши услуги, ваш стиль общения. Быстро и без сложных интеграций.',
+    'admin-label': 'ПАНЕЛЬ УПРАВЛЕНИЯ',
+    'admin-r1': 'Иванов А. — Замена масла',
+    'admin-r2': 'Петрова М. — Диагностика',
+    'admin-r3': 'Сидоров К. — Шиномонтаж',
+    'cta-h': 'Хотите посмотреть, как это работает в вашем сервисе?',
+    'cta-p': 'Запишитесь на демо — покажем живую работу AI на реальных сценариях вашего бизнеса. Бесплатно, без обязательств.',
+    'lbl-name': 'Ваше имя', 'lbl-shop': 'Название сервиса',
+    'lbl-contact': 'WhatsApp или Telegram', 'lbl-country': 'Страна',
+    'inp-name': {placeholder: 'Александр'}, 'inp-shop': {placeholder: 'Автосервис №1'},
+    'inp-contact': {placeholder: '+7 900 000 00 00'},
+    'opt-ru': 'Россия', 'opt-kz': 'Казахстан', 'opt-uz': 'Узбекистан', 'opt-ge': 'Грузия', 'opt-other': 'Другая',
+    'btn-submit': 'Записаться на демо →',
+    'form-disc': 'Мы свяжемся с вами в течение 24 часов. Никакого спама.',
+    'success-h': 'Заявка принята!',
+    'success-p': 'Мы свяжемся с вами в течение 24 часов для назначения демо.',
+  },
+  en: {
+    'nav-cta-text': 'Book a Demo',
+    'hero-badge': 'AI Manager for Auto Repair Shops',
+    'hero-h1': 'Clients message.<br><em>AI replies.</em><br>Lead saved.',
+    'hero-sub': 'InGarage AI handles WhatsApp and Telegram messages like a real manager — instantly, 24/7, with zero missed leads. You never lose a customer, even when your team is busy under a car.',
+    'btn-hero-demo': 'Get a Demo',
+    'btn-hero-how': 'How it works',
+    'chat-status': 'Online • Replies instantly',
+    'msg1': 'Hi, how much for an oil change on a 2020 Camry?',
+    'msg2': 'Good evening! Oil change for a 2020 Camry starts at $45 including filter. Want to book for tomorrow?',
+    'msg3': 'Yes, 10am works',
+    'msg4': 'Done! You\'re booked for tomorrow at 10:00. We\'ll remind you an hour before. Your plate number?',
+    'crm-badge': '✓ Lead saved to CRM',
+    'stat1': 'Leads accepted without days off',
+    'stat2': 'Average response time',
+    'stat3': 'Missed leads',
+    'tag-problem': 'The Problem',
+    'title-problem': 'Why shops lose money every single day',
+    'sub-problem': 'A customer messages — the mechanic doesn\'t reply. The customer goes to a competitor. This happens in every shop, every day.',
+    'prob1-h': 'Mechanic doesn\'t answer',
+    'prob1-p': 'Hands are greasy, under a car, on a break — the client doesn\'t wait and leaves. You lose the lead without even knowing.',
+    'prob2-h': 'Written on paper — and gone',
+    'prob2-p': 'Forgotten, lost, never passed along. Client shows up — \'not in the book\'. Argument, and a lost regular.',
+    'prob3-h': 'Nights and weekends — silence',
+    'prob3-p': 'A customer messages Sunday evening. No reply. By morning they\'re at a competitor.',
+    'tag-how': 'How it works',
+    'title-how': 'Three steps — your shop runs itself',
+    'sub-how': 'No complex setup. Connect your messenger, configure your prices — the AI starts working.',
+    'step1-h': 'Client messages WhatsApp or Telegram',
+    'step1-p': 'As usual — any question, any time of day. The AI understands context and conversation history.',
+    'step2-h': 'AI replies like a real manager',
+    'step2-p': 'Advises on prices and services, clarifies details, books appointments. No robotic scripts.',
+    'step3-h': 'Lead appears in your CRM',
+    'step3-p': 'Client data, car details, appointment time — in your dashboard. If needed, AI escalates to a human.',
+    'tag-feat': 'Capabilities',
+    'title-feat': 'Everything a shop owner needs',
+    'sub-feat': 'From the first client message to a CRM entry — one tool.',
+    'feat1-h': 'WhatsApp & Telegram',
+    'feat1-p': 'Works in both messengers simultaneously. Clients write wherever is convenient for them.',
+    'feat2-h': 'Understands conversation context',
+    'feat2-p': 'Remembers what the client asked before. Never asks the same thing twice. Sounds human.',
+    'feat3-h': 'Human escalation',
+    'feat3-p': 'If a client asks something complex or escalates — AI instantly notifies a human manager.',
+    'feat4-tag': 'Customization',
+    'feat4-h': 'Full CRM tailored to your shop',
+    'feat4-p': 'We configure the system fully for you: your prices, your services, your communication style. Fast, no complex integrations.',
+    'admin-label': 'ADMIN PANEL',
+    'admin-r1': 'Johnson A. — Oil change',
+    'admin-r2': 'Smith M. — Diagnostics',
+    'admin-r3': 'Brown K. — Tire change',
+    'cta-h': 'Want to see how it works in your shop?',
+    'cta-p': 'Book a demo — we\'ll show the AI working live on your real business scenarios. Free, no strings attached.',
+    'lbl-name': 'Your name', 'lbl-shop': 'Shop name',
+    'lbl-contact': 'WhatsApp or Telegram', 'lbl-country': 'Country',
+    'inp-name': {placeholder: 'Alexander'}, 'inp-shop': {placeholder: 'Auto Shop #1'},
+    'inp-contact': {placeholder: '+1 555 000 0000'},
+    'opt-ru': 'Russia', 'opt-kz': 'Kazakhstan', 'opt-uz': 'Uzbekistan', 'opt-ge': 'Georgia', 'opt-other': 'Other',
+    'btn-submit': 'Book a Demo →',
+    'form-disc': 'We\'ll reach out within 24 hours. No spam, ever.',
+    'success-h': 'Request received!',
+    'success-p': 'We\'ll contact you within 24 hours to schedule your demo.',
+  }
+};
+function setLang(lang) {
+  document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.documentElement.lang = lang;
+  const data = t[lang];
+  for (const [id, val] of Object.entries(data)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (typeof val === 'object' && val.placeholder !== undefined) {
+      el.placeholder = val.placeholder;
+    } else {
+      el.innerHTML = val;
+    }
+  }
+}
+function submitForm(e) {
+  e.preventDefault();
+  document.getElementById('demoForm').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+}
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.problem-card, .step, .feature-card, .stat').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+setLang('ru');
+</script>
+</body>
+</html>
