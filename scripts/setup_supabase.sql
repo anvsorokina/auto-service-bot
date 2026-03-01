@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS shops (
     owner_telegram_id BIGINT,
     telegram_bot_token VARCHAR(255),
     telegram_bot_username VARCHAR(100),
+    whatsapp_phone_number VARCHAR(20),
     webhook_url     VARCHAR(500),
     greeting_text   TEXT,
     language        VARCHAR(5) DEFAULT 'ru',
@@ -33,12 +34,20 @@ CREATE TABLE IF NOT EXISTS shops (
     collect_phone   BOOLEAN DEFAULT true,
     collect_name    BOOLEAN DEFAULT true,
     offer_appointment BOOLEAN DEFAULT true,
+    bot_personality VARCHAR(50) DEFAULT 'friendly',
+    bot_faq_custom  TEXT,
+    promo_text      TEXT,
+    plan            VARCHAR(20) DEFAULT 'free',
+    plan_conversations_limit INTEGER DEFAULT 50,
     address         VARCHAR(500),
     maps_url        VARCHAR(500),
     is_active       BOOLEAN DEFAULT true,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_shops_bot_token ON shops(telegram_bot_token) WHERE is_active;
+CREATE INDEX IF NOT EXISTS idx_shops_owner_tg ON shops(owner_telegram_id) WHERE is_active;
 
 -- ============================================================
 -- DEVICE CATEGORIES (global reference)
@@ -52,12 +61,11 @@ CREATE TABLE IF NOT EXISTS device_categories (
 );
 
 INSERT INTO device_categories (slug, name_ru, name_en, icon) VALUES
-('smartphone', 'Смартфон', 'Smartphone', '📱'),
-('laptop', 'Ноутбук', 'Laptop', '💻'),
-('tablet', 'Планшет', 'Tablet', '📟'),
-('smartwatch', 'Умные часы', 'Smartwatch', '⌚'),
-('headphones', 'Наушники', 'Headphones', '🎧'),
-('game_console', 'Игровая консоль', 'Game Console', '🎮')
+('sedan', 'Легковой', 'Sedan', '🚗'),
+('suv', 'Внедорожник / Кроссовер', 'SUV / Crossover', '🚙'),
+('truck', 'Грузовой', 'Truck', '🚛'),
+('minivan', 'Минивэн', 'Minivan', '🚐'),
+('commercial', 'Коммерческий транспорт', 'Commercial', '🚚')
 ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================================
@@ -74,15 +82,16 @@ CREATE TABLE IF NOT EXISTS repair_types (
 );
 
 INSERT INTO repair_types (slug, name_ru, name_en, device_category_id, typical_duration_minutes) VALUES
-('screen_replacement', 'Замена экрана', 'Screen Replacement', (SELECT id FROM device_categories WHERE slug='smartphone'), 60),
-('battery_replacement', 'Замена аккумулятора', 'Battery Replacement', (SELECT id FROM device_categories WHERE slug='smartphone'), 30),
-('water_damage', 'Ремонт после воды', 'Water Damage Repair', (SELECT id FROM device_categories WHERE slug='smartphone'), 120),
-('charging_port', 'Ремонт разъёма зарядки', 'Charging Port Repair', (SELECT id FROM device_categories WHERE slug='smartphone'), 45),
-('camera_repair', 'Ремонт камеры', 'Camera Repair', (SELECT id FROM device_categories WHERE slug='smartphone'), 45),
-('speaker_repair', 'Ремонт динамика', 'Speaker Repair', (SELECT id FROM device_categories WHERE slug='smartphone'), 30),
-('back_glass', 'Замена задней крышки', 'Back Glass Replacement', (SELECT id FROM device_categories WHERE slug='smartphone'), 60),
-('button_repair', 'Ремонт кнопок', 'Button Repair', (SELECT id FROM device_categories WHERE slug='smartphone'), 30),
-('software_issue', 'Программная проблема', 'Software Issue', (SELECT id FROM device_categories WHERE slug='smartphone'), 30)
+('engine_repair', 'Ремонт двигателя', 'Engine Repair', (SELECT id FROM device_categories WHERE slug='sedan'), 240),
+('brake_repair', 'Ремонт тормозов', 'Brake Repair', (SELECT id FROM device_categories WHERE slug='sedan'), 120),
+('oil_change', 'Замена масла / ТО', 'Oil Change / Maintenance', (SELECT id FROM device_categories WHERE slug='sedan'), 60),
+('suspension_repair', 'Ремонт подвески', 'Suspension Repair', (SELECT id FROM device_categories WHERE slug='sedan'), 180),
+('diagnostics', 'Диагностика', 'Diagnostics', (SELECT id FROM device_categories WHERE slug='sedan'), 60),
+('electrical', 'Электрика', 'Electrical', (SELECT id FROM device_categories WHERE slug='sedan'), 120),
+('bodywork', 'Кузов / покраска', 'Bodywork / Paint', (SELECT id FROM device_categories WHERE slug='sedan'), 480),
+('ac_repair', 'Ремонт кондиционера', 'AC Repair', (SELECT id FROM device_categories WHERE slug='sedan'), 120),
+('transmission', 'Ремонт коробки передач', 'Transmission Repair', (SELECT id FROM device_categories WHERE slug='sedan'), 360),
+('tire_service', 'Шины / колёса', 'Tire Service', (SELECT id FROM device_categories WHERE slug='sedan'), 60)
 ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================================
@@ -136,9 +145,14 @@ CREATE TABLE IF NOT EXISTS conversations (
     messages_count  INT DEFAULT 0,
     started_at      TIMESTAMPTZ DEFAULT NOW(),
     completed_at    TIMESTAMPTZ,
+    last_message_at TIMESTAMPTZ,
+    mode            VARCHAR(10) DEFAULT 'bot',
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_conversations_shop_status ON conversations(shop_id, status);
+CREATE INDEX IF NOT EXISTS idx_conversations_shop_last_msg ON conversations(shop_id, last_message_at DESC);
 
 -- ============================================================
 -- MESSAGES
@@ -166,6 +180,7 @@ CREATE TABLE IF NOT EXISTS leads (
     customer_name   VARCHAR(200),
     customer_phone  VARCHAR(50),
     customer_telegram VARCHAR(100),
+    device_category VARCHAR(50),
     device_full_name VARCHAR(300),
     problem_summary TEXT,
     urgency         VARCHAR(20),

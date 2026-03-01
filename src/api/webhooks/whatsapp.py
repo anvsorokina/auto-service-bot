@@ -109,6 +109,9 @@ async def whatsapp_webhook(
         "bot_faq_custom": getattr(shop, "bot_faq_custom", None),
         "address": getattr(shop, "address", None),
         "shop_name": getattr(shop, "name", None),
+        "timezone": getattr(shop, "timezone", None) or "Europe/Moscow",
+        "owner_telegram_id": getattr(shop, "owner_telegram_id", None),
+        "telegram_bot_token": getattr(shop, "telegram_bot_token", None),
     }
 
     engine = ConversationEngine(session_manager, shop_config=shop_config, db=db)
