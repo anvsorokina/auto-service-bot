@@ -56,13 +56,8 @@ DEVICE_CATEGORY_LABELS = {
     "hatchback": "Хэтчбек",
     "minivan": "Минивэн",
     "truck": "Грузовик / Пикап",
+    "commercial": "Коммерческий",
     "other": "Другое",
-    # legacy keys kept for backwards compatibility
-    "smartphone": "Легковой",
-    "laptop": "Внедорожник",
-    "tablet": "Хэтчбек",
-    "watch": "Минивэн",
-    "headphones": "Грузовик",
 }
 
 STEP_LABELS = {

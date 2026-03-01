@@ -61,7 +61,7 @@ class Conversation(Base, UUIDMixin, TimestampMixin):
 
     # Relationships
     shop = relationship("Shop", back_populates="conversations")
-    messages = relationship("Message", back_populates="conversation", lazy="selectin")
+    messages = relationship("Message", back_populates="conversation", lazy="noload")
 
 
 class Message(Base, UUIDMixin):

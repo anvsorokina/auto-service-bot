@@ -50,13 +50,8 @@ DEVICE_CATEGORY_LABELS = {
     "hatchback": "🚗 Хэтчбек",
     "minivan": "🚐 Минивэн",
     "truck": "🚛 Грузовик / Пикап",
+    "commercial": "🚚 Коммерческий",
     "other": "🔧 Другое",
-    # legacy keys kept for backwards compatibility
-    "smartphone": "🚗 Легковой",
-    "laptop": "🚙 Внедорожник",
-    "tablet": "🚗 Хэтчбек",
-    "watch": "🚐 Минивэн",
-    "headphones": "🚛 Грузовик",
 }
 
 
@@ -71,76 +66,6 @@ async def leads_list(
 ):
     """Redirect to unified clients page."""
     return RedirectResponse(url="/admin/conversations")
-    if shop is None:
-        return RedirectResponse(url="/admin/login")
-
-    per_page = 20
-    offset = (page - 1) * per_page
-
-    # Base query
-    stmt = select(Lead).where(Lead.shop_id == shop.id)
-
-    # Filters
-    if status:
-        stmt = stmt.where(Lead.status == status)
-    if search:
-        search_filter = f"%{search.lower()}%"
-        stmt = stmt.where(
-            (func.lower(Lead.customer_name).like(search_filter))
-            | (func.lower(Lead.device_full_name).like(search_filter))
-            | (func.lower(Lead.problem_summary).like(search_filter))
-        )
-
-    # Count
-    count_stmt = select(func.count()).select_from(stmt.subquery())
-    total = (await db.execute(count_stmt)).scalar_one()
-
-    # Fetch page
-    stmt = stmt.order_by(Lead.created_at.desc()).offset(offset).limit(per_page)
-    result = await db.execute(stmt)
-    leads = result.scalars().all()
-
-    # Mark as viewed
-    new_lead_ids = [lead.id for lead in leads if lead.status == "new"]
-    if new_lead_ids:
-        await db.execute(
-            update(Lead)
-            .where(Lead.id.in_(new_lead_ids))
-            .values(status="viewed", updated_at=datetime.now(timezone.utc))
-        )
-        await db.commit()
-
-    total_pages = max(1, (total + per_page - 1) // per_page)
-
-    # Check if HTMX request (partial update)
-    if request.headers.get("HX-Request"):
-        return templates.TemplateResponse("leads/partials/table.html", {
-            "request": request,
-            "leads": leads,
-            "total": total,
-            "page": page,
-            "total_pages": total_pages,
-            "status_filter": status,
-            "search": search,
-            "status_labels": STATUS_LABELS,
-            "urgency_labels": URGENCY_LABELS,
-            "device_category_labels": DEVICE_CATEGORY_LABELS,
-        })
-
-    return templates.TemplateResponse("leads/list.html", {
-        "request": request,
-        "shop": shop,
-        "active_page": "leads",
-        "leads": leads,
-        "total": total,
-        "page": page,
-        "total_pages": total_pages,
-        "status_filter": status,
-        "search": search or "",
-        "status_labels": STATUS_LABELS,
-        "urgency_labels": URGENCY_LABELS,
-        "device_category_labels": DEVICE_CATEGORY_LABELS,
-    })
 
 
 @router.get("/{lead_id}", response_class=HTMLResponse)

@@ -55,14 +55,14 @@ def sample_session():
 
 @pytest.fixture
 def sample_session_with_device():
-    """Create a session with device info already collected."""
+    """Create a session with car info already collected."""
     return SessionState(
         conversation_id=str(uuid.uuid4()),
         shop_id=str(uuid.uuid4()),
         current_step=ConversationStep.PROBLEM,
         collected=CollectedData(
-            device_category="smartphone",
-            device_brand="Apple",
-            device_model="iPhone 15 Pro",
+            device_category="car",
+            device_brand="Toyota",
+            device_model="Camry",
         ),
     )
