@@ -13,9 +13,12 @@
     <script src="/admin/static/htmx.min.js"></script>
 </head>
 <body>
+    <!-- Sidebar overlay (closes sidebar when tapping outside on mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
     <div class="admin-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2 class="brand-name">🚗 InGarage AI</h2>
                 {% if shop and shop.name %}
@@ -25,27 +28,27 @@
             <nav>
                 <ul>
                     <li>
-                        <a href="/admin/conversations" class="{% if active_page == 'conversations' %}active{% endif %}">
+                        <a href="/admin/conversations" class="{% if active_page == 'conversations' %}active{% endif %}" onclick="closeSidebar()">
                             👥 Клиенты
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/pricing" class="{% if active_page == 'pricing' %}active{% endif %}">
+                        <a href="/admin/pricing" class="{% if active_page == 'pricing' %}active{% endif %}" onclick="closeSidebar()">
                             💰 Цены
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/schedule" class="{% if active_page == 'schedule' %}active{% endif %}">
+                        <a href="/admin/schedule" class="{% if active_page == 'schedule' %}active{% endif %}" onclick="closeSidebar()">
                             📅 Расписание
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/settings" class="{% if active_page == 'settings' %}active{% endif %}">
+                        <a href="/admin/settings" class="{% if active_page == 'settings' %}active{% endif %}" onclick="closeSidebar()">
                             ⚙️ Настройки
                         </a>
                     </li>
                     <li>
-                        <a href="/admin/dashboard" class="{% if active_page == 'dashboard' %}active{% endif %}">
+                        <a href="/admin/dashboard" class="{% if active_page == 'dashboard' %}active{% endif %}" onclick="closeSidebar()">
                             📊 Аналитика
                         </a>
                     </li>
@@ -60,6 +63,9 @@
         <!-- Main content -->
         <main class="main-content">
             <header class="page-header">
+                <!-- Hamburger button (visible on mobile only) -->
+                <button class="hamburger-btn" id="hamburger-btn" onclick="openSidebar()" aria-label="Открыть меню">&#9776;</button>
+
                 <h1>{% block page_title %}{% endblock %}</h1>
                 <div class="header-actions">
                     {% block header_actions %}{% endblock %}
@@ -67,7 +73,7 @@
             </header>
 
             {% if messages %}
-            <div class="messages">
+            <div class="messages" style="padding: 0 1.5rem;">
                 {% for msg in messages %}
                 <div class="alert alert-{{ msg.type }}">{{ msg.text }}</div>
                 {% endfor %}
