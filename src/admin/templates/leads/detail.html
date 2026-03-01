@@ -2,7 +2,7 @@
 
 {% block title %}Заявка — {{ lead.customer_name or 'Без имени' }}{% endblock %}
 {% block page_title %}
-    <a href="/admin/leads" style="text-decoration: none; color: var(--gray-500); font-size: 0.9rem;">&larr; Назад к заявкам</a>
+    <a href="/admin/leads">&larr; Назад к заявкам</a>
 {% endblock %}
 
 {% block content %}
@@ -103,7 +103,7 @@
     <div>
         {% if lead.conversation_id and conversation %}
         <div style="margin-bottom: 1rem;">
-            <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: var(--gray-700);">💬 Чат с клиентом</h3>
+            <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: var(--white);">💬 Чат с клиентом</h3>
             {% set messages = chat_messages %}
             {% include "chat/panel.html" %}
         </div>

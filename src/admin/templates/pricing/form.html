@@ -2,7 +2,7 @@
 
 {% block title %}{{ form_title }}{% endblock %}
 {% block page_title %}
-    <a href="/admin/pricing" style="text-decoration: none; color: var(--gray-500); font-size: 0.9rem;">&larr; Назад к ценам</a>
+    <a href="/admin/pricing">&larr; Назад к ценам</a>
 {% endblock %}
 
 {% block content %}
@@ -29,14 +29,14 @@
                 <input type="text" name="device_brand" id="device_brand"
                        placeholder="Toyota, BMW, Lada..."
                        value="{{ rule.device_brand or '' if rule else '' }}">
-                <small style="color: var(--gray-500);">Оставьте пустым для любой марки</small>
+                <small style="color: var(--muted);">Оставьте пустым для любой марки</small>
             </div>
             <div class="form-group">
                 <label for="device_model_pattern">Модель</label>
                 <input type="text" name="device_model_pattern" id="device_model_pattern"
                        placeholder="Camry%, X5%, Largus..."
                        value="{{ rule.device_model_pattern or '' if rule else '' }}">
-                <small style="color: var(--gray-500);">% — любые символы после</small>
+                <small style="color: var(--muted);">% — любые символы после</small>
             </div>
         </div>
 

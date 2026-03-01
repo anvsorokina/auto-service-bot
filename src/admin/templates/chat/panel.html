@@ -10,7 +10,7 @@
 {% set is_human = conversation.mode == "human" %}
 
 <style>
-/* Pico CSS full reset for chat input area */
+/* Chat input area overrides for dark theme */
 #chat-panel-{{ conv_id }} .chat-input-area form { margin-bottom: 0 !important; }
 #chat-panel-{{ conv_id }} .chat-send-row {
   display: flex !important;
@@ -24,10 +24,10 @@
   min-width: 0 !important;
   box-sizing: border-box !important;
   padding: 0.5rem 0.75rem !important;
-  border: 1px solid #d1d5db !important;
-  border-radius: 6px !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 10px !important;
   font-size: 0.9rem !important;
-  font-family: inherit !important;
+  font-family: 'DM Sans', sans-serif !important;
   line-height: 1.4 !important;
   resize: none !important;
   white-space: pre-wrap !important;
@@ -36,22 +36,30 @@
   min-height: 2.5rem !important;
   max-height: 6rem !important;
   overflow-y: auto !important;
+  background: #2a2a2a !important;
+  color: #f5f3ee !important;
+}
+#chat-panel-{{ conv_id }} .chat-send-row textarea::placeholder {
+  color: #888 !important;
 }
 #chat-panel-{{ conv_id }} .chat-send-row button[type="submit"] {
   all: unset !important;
   flex-shrink: 0 !important;
   padding: 0.5rem 1rem !important;
-  background: #2563eb !important;
-  color: white !important;
-  border-radius: 6px !important;
-  font-size: 0.9rem !important;
-  font-weight: 500 !important;
+  background: #e8ff47 !important;
+  color: #0a0a0a !important;
+  border-radius: 100px !important;
+  font-size: 0.85rem !important;
+  font-family: 'Syne', sans-serif !important;
+  font-weight: 700 !important;
   cursor: pointer !important;
   white-space: nowrap !important;
   text-align: center !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
 }
 #chat-panel-{{ conv_id }} .chat-send-row button[type="submit"]:hover {
-  background: #1d4ed8 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(232,255,71,0.3) !important;
 }
 #chat-panel-{{ conv_id }} .chat-quick-replies form { margin-bottom: 0 !important; display: inline !important; }
 </style>
@@ -64,17 +72,17 @@
       align-items: center;
       justify-content: space-between;
       padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--gray-200);
-      background: {% if is_human %}#fff3cd{% else %}#f0fdf4{% endif %};
-      border-radius: 8px 8px 0 0;
+      border-bottom: 1px solid var(--border);
+      background: {% if is_human %}rgba(255,92,53,0.08){% else %}rgba(232,255,71,0.05){% endif %};
+      border-radius: 16px 16px 0 0;
   ">
     <div style="display: flex; align-items: center; gap: 0.5rem;">
       {% if is_human %}
-        <span class="badge" style="background: #fd7e14; color: white;">👨‍🔧 Мастер отвечает</span>
+        <span class="badge" style="background: rgba(255,92,53,0.2); color: #ff5c35;">👨‍🔧 Мастер отвечает</span>
       {% else %}
-        <span class="badge" style="background: #16a34a; color: white;">🤖 Бот отвечает</span>
+        <span class="badge" style="background: rgba(232,255,71,0.15); color: #e8ff47;">🤖 Бот отвечает</span>
       {% endif %}
-      <span style="font-size: 0.8rem; color: var(--gray-500);">
+      <span style="font-size: 0.8rem; color: var(--muted);">
         {% if conversation.channel == 'whatsapp' %}
         WhatsApp: {{ conversation.external_user_id }}
         {% else %}
@@ -147,9 +155,9 @@
   {% if is_human %}
   <div class="chat-input-area" style="
       padding: 0.75rem 1rem;
-      border-top: 1px solid var(--gray-200);
-      background: white;
-      border-radius: 0 0 8px 8px;
+      border-top: 1px solid var(--border);
+      background: var(--gray);
+      border-radius: 0 0 16px 16px;
   ">
     {# Quick reply buttons #}
     <div class="chat-quick-replies" style="

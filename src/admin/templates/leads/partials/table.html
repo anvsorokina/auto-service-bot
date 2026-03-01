@@ -23,7 +23,7 @@
             <td>
                 <strong>{{ lead.customer_name or '—' }}</strong>
                 {% if lead.customer_phone %}
-                <br><small style="color: var(--gray-500);">{{ lead.customer_phone }}</small>
+                <br><small style="color: var(--muted);">{{ lead.customer_phone }}</small>
                 {% endif %}
             </td>
             <td>{{ device_category_labels.get(lead.device_category, lead.device_category or '—') }}</td>
@@ -37,7 +37,7 @@
                 {% if lead.estimated_price_min and lead.estimated_price_max %}
                 {{ '{:,.0f}'.format(lead.estimated_price_min|float) }}–{{ '{:,.0f}'.format(lead.estimated_price_max|float) }} ₽
                 {% else %}
-                <span style="color: var(--gray-500);">Диагностика</span>
+                <span style="color: var(--muted);">Диагностика</span>
                 {% endif %}
             </td>
             <td>

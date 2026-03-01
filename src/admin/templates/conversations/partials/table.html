@@ -36,17 +36,17 @@
                 {% if conv.channel == 'whatsapp' %}
                 <span title="WhatsApp" style="font-size: 0.75rem; color: #25d366;">WA</span>
                 {% else %}
-                <span title="Telegram" style="font-size: 0.75rem; color: #0088cc;">TG</span>
+                <span title="Telegram" style="font-size: 0.75rem; color: #29b6f6;">TG</span>
                 {% endif %}
                 {% if name %}
                 <strong>{{ name }}</strong>
                 {% else %}
-                <span style="font-family: monospace; font-size: 0.8rem; color: var(--gray-500);">
+                <span style="font-family: monospace; font-size: 0.8rem; color: var(--muted);">
                     {{ conv.external_user_id }}
                 </span>
                 {% endif %}
                 {% if phone %}
-                <br><small style="color: var(--gray-500);">{{ phone }}</small>
+                <br><small style="color: var(--muted);">{{ phone }}</small>
                 {% endif %}
             </td>
             <td>
@@ -55,7 +55,7 @@
                 {% elif conv.device_category %}
                 {{ device_category_labels.get(conv.device_category, conv.device_category) }}
                 {% else %}
-                <span style="color: var(--gray-500);">—</span>
+                <span style="color: var(--muted);">—</span>
                 {% endif %}
             </td>
             <td>
@@ -63,7 +63,7 @@
                     {% if problem %}
                     {{ problem[:50] }}{% if problem|length > 50 %}...{% endif %}
                     {% else %}
-                    <span style="color: var(--gray-500);">—</span>
+                    <span style="color: var(--muted);">—</span>
                     {% endif %}
                 </span>
             </td>
@@ -71,7 +71,7 @@
                 {% if price_min and price_max %}
                 {{ '{:,.0f}'.format(price_min|float) }}–{{ '{:,.0f}'.format(price_max|float) }} ₽
                 {% else %}
-                <span style="color: var(--gray-500);">—</span>
+                <span style="color: var(--muted);">—</span>
                 {% endif %}
             </td>
             <td>
