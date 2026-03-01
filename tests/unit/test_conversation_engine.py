@@ -52,16 +52,16 @@ class TestConversationEngine:
         result = await engine.handle_callback(
             shop_id="shop-1",
             user_id="user-1",
-            callback_data="device:smartphone",
+            callback_data="device:Toyota",
         )
         assert result.response_text
-        assert result.keyboard is not None  # Should show brand buttons
+        assert result.keyboard is not None  # Should show model buttons for Toyota
 
     @pytest.mark.asyncio
     async def test_callback_no_session(self, engine: ConversationEngine):
         result = await engine.handle_callback(
             shop_id="shop-1",
             user_id="user-1",
-            callback_data="device:smartphone",
+            callback_data="device:Toyota",
         )
         assert "истекла" in result.response_text.lower() or "start" in result.response_text.lower()

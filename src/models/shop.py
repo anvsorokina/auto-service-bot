@@ -64,7 +64,8 @@ class Shop(Base, UUIDMixin, TimestampMixin):
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    # Relationships
-    conversations = relationship("Conversation", back_populates="shop", lazy="selectin")
-    leads = relationship("Lead", back_populates="shop", lazy="selectin")
-    price_rules = relationship("PriceRule", back_populates="shop", lazy="selectin")
+    # Relationships — lazy="noload" to avoid pulling all data on every shop query.
+    # Use .options(selectinload(Shop.leads)) where needed.
+    conversations = relationship("Conversation", back_populates="shop", lazy="noload")
+    leads = relationship("Lead", back_populates="shop", lazy="noload")
+    price_rules = relationship("PriceRule", back_populates="shop", lazy="noload")
