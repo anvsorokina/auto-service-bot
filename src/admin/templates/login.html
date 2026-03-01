@@ -6,11 +6,14 @@
     <title>Вход — InGarage AI</title>
     <link rel="stylesheet" href="/admin/static/pico.min.css">
     <link rel="stylesheet" href="/admin/static/style.css">
+    <script>
+        (function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+    </script>
 </head>
 <body class="login-body">
     <main class="login-container">
         <div class="login-card">
-            <h1>🚗 InGarage AI</h1>
+            <h1 class="brand-name">🚗 InGarage AI</h1>
             <p class="login-subtitle">Панель управления автосервисом</p>
 
             {% if error %}
