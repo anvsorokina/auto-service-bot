@@ -134,6 +134,121 @@ STEP_INSTRUCTIONS = {
   примера / primera → Primera (Nissan)
   максима / maxima → Maxima (Nissan)
 
+НАРОДНЫЕ ПРОЗВИЩА И ЖАРГОН (Россия, Казахстан, Узбекистан):
+  айошка / ай-ошка / айо → Mitsubishi Pajero iO
+  паджерик / паджерка / падж → Mitsubishi Pajero
+  паджеро ио / паджеро io → Mitsubishi Pajero iO
+  делика / деликас → Mitsubishi Delica
+  лансер / ланцер / лансёр → Mitsubishi Lancer
+  аутлик / аутик → Mitsubishi Outlander
+  камрюха / камрюшка / камри → Toyota Camry
+  королка / королка → Toyota Corolla
+  марковка / маркуша / марк → Toyota Mark II
+  крузак / крузер / кукурузер → Toyota Land Cruiser
+  прадик / прадо → Toyota Land Cruiser Prado
+  рафик → Toyota RAF / Toyota RAV4
+  хайс / хайсик → Toyota HiAce
+  калдина → Toyota Caldina
+  чайзер / чайник → Toyota Chaser
+  виста / вистёра → Toyota Vista
+  харик / харриер → Toyota Harrier
+  сурф → Toyota Hilux Surf
+  хайлюкс / хайлюк → Toyota Hilux
+  ипсум → Toyota Ipsum
+  сюрф → Toyota Hilux Surf
+  филдер → Toyota Corolla Fielder
+  альфард → Toyota Alphard
+  ноах → Toyota Noah
+  степвагон / стэпвагон → Honda Stepwgn
+  фит / фитёр / фитик → Honda Fit
+  интегра → Honda Integra
+  стрим → Honda Stream
+  одиссей → Honda Odyssey
+  элемент → Honda Element
+  сивка / цивик → Honda Civic
+  патрол / патролка → Nissan Patrol
+  кашкай / дикий кашкай → Nissan Qashqai
+  тиида / тиидка → Nissan Tiida
+  нотик / нот → Nissan Note
+  ноут → Nissan Note
+  жук / жучок → Nissan Juke
+  террано / тиррано → Nissan Terrano
+  икстрейл / хтрейл → Nissan X-Trail
+  вингроад → Nissan Wingroad
+  блюбёрд / блюбёрдик → Nissan Bluebird
+  лаурель → Nissan Laurel
+  сефиро → Nissan Cefiro
+  цефиро → Nissan Cefiro
+  скайлайн → Nissan Skyline
+  серена → Nissan Serena
+  вестра / альмера → Nissan Almera
+  форик / форестер → Subaru Forester
+  импреза / импрезка → Subaru Impreza
+  легаси / легася / лега → Subaru Legacy
+  аутбэк / аутбек → Subaru Outback
+  эскудик / эскуд → Suzuki Escudo / Suzuki Grand Vitara
+  витарка / витара → Suzuki Vitara
+  джимник / джимни → Suzuki Jimny
+  свифт → Suzuki Swift
+  гетц / гетцик → Hyundai Getz
+  акцент / акцентик → Hyundai Accent
+  солярка / солярис → Hyundai Solaris
+  тушка / тушкан / туксон / туссан → Hyundai Tucson
+  креташка / кретка → Hyundai Creta
+  санта / санта фе → Hyundai Santa Fe
+  элантра / элантрочка → Hyundai Elantra
+  спортёж / спортик → Kia Sportage
+  сорик / соренто → Kia Sorento
+  рио / киа-рио → Kia Rio
+  церато / черато → Kia Cerato
+  сид / сиид → Kia Ceed
+  логанчик / логан → Renault Logan
+  дастик / дастер → Renault Duster
+  каптюр → Renault Kaptur
+  сандеро → Renault Sandero
+  фокусник / фокус → Ford Focus
+  мондюк / мондео → Ford Mondeo
+  куга → Ford Kuga
+  пассатик / пассат → Volkswagen Passat
+  гольфик / гольф → Volkswagen Golf
+  тигуаша / тигуан → Volkswagen Tiguan
+  полик / поло → Volkswagen Polo
+  нексия / нексишка → Daewoo Nexia
+  матиз / матизка → Daewoo Matiz
+  ласетти / лачетти → Chevrolet Lacetti
+  ланос → Daewoo/Chevrolet Lanos
+  кобальт → Chevrolet Cobalt
+  спарк → Chevrolet Spark
+  каптива → Chevrolet Captiva
+  круз / крузик → Chevrolet Cruze
+  шнива / нива шевроле → Chevrolet Niva
+  нива / нивка → Lada Niva / Lada 4x4
+  приора / приорка → Lada Priora
+  калина / калинка → Lada Kalina
+  веста → Lada Vesta
+  гранта / грантик → Lada Granta
+  десятка / десяточка → Lada 2110 (VAZ-2110)
+  девятка → Lada 2109 (VAZ-2109)
+  восьмёрка → Lada 2108 (VAZ-2108)
+  семёрка / семёрочка → Lada 2107 (VAZ-2107)
+  шестёрка / шаха → Lada 2106 (VAZ-2106)
+  пятёрка → Lada 2105 (VAZ-2105)
+  четвёрка → Lada 2104 (VAZ-2104)
+  тройка → Lada 2103 (VAZ-2103)
+  двойка → Lada 2102 (VAZ-2102)
+  копейка / копеечка → Lada 2101 (VAZ-2101)
+  буханка / батон → UAZ-452 / UAZ SGR
+  патриот / патрик → UAZ Patriot
+  хантер → UAZ Hunter
+  газелька / газель → GAZ Gazelle
+  мерс / мерин → Mercedes-Benz
+  бумер / бэха / бэхи → BMW
+  ведро / вёдро → (уточни марку, это жаргон для любой старой машины)
+  крокодил / кроко → (уточни марку)
+  запорожец / запор → ZAZ
+  москвич → Moskvitch
+  волга / волжанка → GAZ Volga
+
 ПРАВИЛА ИЗВЛЕЧЕНИЯ:
 1. Если в тексте есть ХОТЬ ЧТО-ТО похожее на марку авто — извлеки device_brand. Не жди идеального написания.
 2. Год (4 цифры типа 2007, 2015, 2018 и т.д.) → записывай в device_model как часть (напр. "X-Terra 2007").
@@ -145,6 +260,11 @@ STEP_INSTRUCTIONS = {
 6. Если есть марка + модель — should_advance=true.
 7. Будь агрессивным: "ниссан хтерра 2007" ОДНОЗНАЧНО = brand=Nissan, model=X-Terra 2007.
    "масло поменять на камри" = brand=Toyota, model=Camry, problem_category=oil_change.
+8. НАРОДНЫЕ ПРОЗВИЩА — приоритет! "айошка" = Mitsubishi Pajero iO, не Toyota Aygo.
+   "камрюха" = Toyota Camry, "крузак" = Toyota Land Cruiser, "приорка" = Lada Priora.
+   Если слово есть в списке прозвищ — используй расшифровку из словаря, а НЕ догадки.
+9. Если прозвище указывает на конкретную марку+модель — ставь ОБА: device_brand И device_model.
+   Пример: "айошка" → device_brand=Mitsubishi, device_model=Pajero iO, should_advance=true.
 
 ПРИМЕРЫ ПРАВИЛЬНОГО РАЗБОРА:
 - "ниссан хтерра 2007" → device_brand=Nissan, device_model=X-Terra 2007, should_advance=true
@@ -154,6 +274,17 @@ STEP_INSTRUCTIONS = {
 - "хонда аккорд не заводится" → device_brand=Honda, device_model=Accord, problem_description="не заводится", problem_category="engine_repair", should_advance=true
 - "тормоза скрипят" → problem_description="тормоза скрипят", problem_category="brake_repair", should_advance=false
 - "субару форестер" → device_brand=Subaru, device_model=Forester, should_advance=true
+- "айошка" → device_brand=Mitsubishi, device_model=Pajero iO, should_advance=true
+- "камрюха 2018" → device_brand=Toyota, device_model=Camry 2018, should_advance=true
+- "крузак 100" → device_brand=Toyota, device_model=Land Cruiser 100, should_advance=true
+- "прадик 120 дизель" → device_brand=Toyota, device_model=Land Cruiser Prado 120, should_advance=true
+- "солярка дёргается" → device_brand=Hyundai, device_model=Solaris, problem_description="дёргается", should_advance=true
+- "нексия масло жрёт" → device_brand=Daewoo, device_model=Nexia, problem_description="масло жрёт", problem_category="engine_repair", should_advance=true
+- "гранта не заводится" → device_brand=Lada, device_model=Granta, problem_description="не заводится", problem_category="engine_repair", should_advance=true
+- "приорка" → device_brand=Lada, device_model=Priora, should_advance=true
+- "форик sf5" → device_brand=Subaru, device_model=Forester SF5, should_advance=true
+- "девятка" → device_brand=Lada, device_model=2109 (VAZ-2109), should_advance=true
+- "буханка" → device_brand=UAZ, device_model=SGR (452), should_advance=true
 """,
     "device_type": """
 ЦЕЛЬ: узнать марку автомобиля.
