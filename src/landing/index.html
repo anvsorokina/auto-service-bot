@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
 <link rel="apple-touch-icon" sizes="192x192" href="/static/logo-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --black: #0a0a0a;
@@ -27,13 +27,14 @@
   body {
     background: var(--black);
     color: var(--white);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 16px;
     line-height: 1.6;
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, .logo { font-family: 'Syne', sans-serif; font-weight: 700; }
+  h1, h2, h3, h4 { font-weight: 700; }
+  h1, h2, .logo { font-family: 'Syne', sans-serif; }
 
   /* NAV */
   nav {
@@ -71,7 +72,6 @@
     background: none;
     border: none;
     color: var(--muted);
-    font-family: 'Syne', sans-serif;
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -86,7 +86,6 @@
   .nav-cta {
     background: var(--accent);
     color: var(--black);
-    font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 0.8rem;
     letter-spacing: 0.05em;
@@ -150,7 +149,6 @@
   }
 
   .testimonial-name {
-    font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 0.95rem;
     display: block;
@@ -183,7 +181,7 @@
     background: var(--gray2);
     padding: 20px 24px;
     text-align: left;
-    font-family: 'Syne', sans-serif;
+
     font-weight: 700;
     font-size: 0.95rem;
     border-bottom: 1px solid var(--border);
@@ -247,7 +245,7 @@
   }
 
   .pricing-amount {
-    font-family: 'Syne', sans-serif;
+
     font-size: 3.5rem;
     font-weight: 800;
     color: var(--white);
@@ -327,7 +325,7 @@
     background: transparent;
     border: 1.5px solid var(--accent);
     color: var(--accent);
-    font-family: 'Syne', sans-serif;
+
     font-weight: 700;
     font-size: 0.9rem;
     padding: 16px 32px;
@@ -445,7 +443,7 @@
   .btn-primary {
     background: var(--accent);
     color: var(--black);
-    font-family: 'Syne', sans-serif;
+
     font-weight: 700;
     font-size: 0.9rem;
     padding: 16px 32px;
@@ -462,7 +460,7 @@
   .btn-secondary {
     background: transparent;
     color: var(--white);
-    font-family: 'Syne', sans-serif;
+
     font-weight: 600;
     font-size: 0.9rem;
     padding: 16px 32px;
@@ -509,7 +507,7 @@
     object-fit: cover;
   }
 
-  .chat-info strong { font-family: 'Syne', sans-serif; font-size: 0.85rem; display: block; }
+  .chat-info strong { font-size: 0.85rem; display: block; }
 
   .chat-status {
     font-size: 0.72rem;
@@ -599,7 +597,7 @@
     bottom: -16px; right: -16px;
     background: var(--accent2);
     color: white;
-    font-family: 'Syne', sans-serif;
+
     font-size: 0.75rem;
     font-weight: 700;
     padding: 10px 18px;
@@ -618,7 +616,7 @@
   .section-inner { max-width: 1200px; margin: 0 auto; }
 
   .section-tag {
-    font-family: 'Syne', sans-serif;
+
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.15em;
@@ -678,7 +676,7 @@
   .step { background: var(--gray); padding: 48px 36px; }
 
   .step-num {
-    font-family: 'Syne', sans-serif;
+
     font-size: 4rem;
     font-weight: 800;
     color: rgba(232,255,71,0.12);
@@ -686,8 +684,8 @@
     margin-bottom: 20px;
   }
 
-  .step h3 { font-size: 1.1rem; margin-bottom: 12px; }
-  .step p { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+  .step h3 { font-size: 1.15rem; margin-bottom: 12px; }
+  .step p { font-size: 1rem; color: var(--muted); line-height: 1.7; }
 
   /* FEATURES */
   .features-grid {
@@ -749,7 +747,7 @@
     font-size: 0.8rem;
     color: var(--muted);
     margin-bottom: 16px;
-    font-family: 'Syne', sans-serif;
+
     letter-spacing: 0.05em;
   }
 
@@ -814,7 +812,7 @@
   .form-group { display: flex; flex-direction: column; gap: 8px; }
 
   .form-group label {
-    font-family: 'Syne', sans-serif;
+
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -827,7 +825,7 @@
     border: 1.5px solid rgba(0,0,0,0.15);
     border-radius: 10px;
     padding: 14px 16px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 0.95rem;
     color: var(--black);
     outline: none;
@@ -844,7 +842,7 @@
   .form-submit {
     background: var(--black);
     color: var(--accent);
-    font-family: 'Syne', sans-serif;
+
     font-weight: 700;
     font-size: 0.95rem;
     letter-spacing: 0.03em;
@@ -1063,7 +1061,7 @@
       <div class="step">
         <div class="step-num">02</div>
         <h3 id="step2-h">AI консультирует и записывает</h3>
-        <p id="step2-p">Подскажет цену, уточнит марку авто, предложит свободное время. Звучит как реальный менеджер, без робо-речи.</p>
+        <p id="step2-p">Подскажет цену, уточнит марку авто, предложит свободное время. Звучит как реальный менеджер, без ощущения, что говорит робот.</p>
       </div>
       <div class="step">
         <div class="step-num">03</div>
@@ -1335,7 +1333,7 @@ const t = {
     'step1-h': 'Клиент пишет любой вопрос',
     'step1-p': 'В 3 утра или в воскресенье — неважно. Пишет в WhatsApp или Telegram. Получает ответ за 3 секунды.',
     'step2-h': 'AI консультирует и записывает',
-    'step2-p': 'Подскажет цену, уточнит марку авто, предложит свободное время. Звучит как реальный менеджер, без робо-речи.',
+    'step2-p': 'Подскажет цену, уточнит марку авто, предложит свободное время. Звучит как реальный менеджер, без ощущения, что говорит робот.',
     'step3-h': 'Заявка в вашем календаре',
     'step3-p': 'Клиент автоматически добавлен в расписание. Если вопрос сложный — живой менеджер получает уведомление и подключается.',
     'tag-feat': 'Возможности',
