@@ -36,6 +36,10 @@ class Settings(BaseSettings):
     # Session
     session_ttl_seconds: int = 7200  # 2 hours
 
+    # Landing page demo notifications (platform owner)
+    demo_notify_telegram_bot_token: str = ""
+    demo_notify_telegram_chat_id: str = ""
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 

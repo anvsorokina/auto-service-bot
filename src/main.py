@@ -19,6 +19,7 @@ from src.admin.views.schedule import router as admin_schedule_router
 from src.admin.views.dashboard import router as admin_dashboard_router
 from src.admin.views.conversations import router as admin_conversations_router
 from src.admin.views.chat import router as admin_chat_router
+from src.landing.router import router as landing_router
 from src.config import settings
 
 structlog.configure(
@@ -44,6 +45,12 @@ async def lifespan(app: FastAPI):
         environment=settings.environment,
         webhook_base=settings.telegram_webhook_base_url,
     )
+    # Ensure all tables exist (creates missing ones like demo_requests)
+    from src.database import engine
+    from src.models.base import Base
+    import src.models  # noqa: F401 — register all models
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
     logger.info("app_shutting_down")
 
@@ -72,13 +79,4 @@ app.include_router(admin_schedule_router)
 app.include_router(admin_dashboard_router)
 app.include_router(admin_conversations_router)
 app.include_router(admin_chat_router)
-
-
-@app.get("/")
-async def root():
-    """Root endpoint."""
-    return {
-        "name": "AutoService Bot API",
-        "version": "0.1.0",
-        "status": "running",
-    }
+app.include_router(landing_router)
