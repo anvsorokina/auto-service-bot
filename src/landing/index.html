@@ -651,6 +651,13 @@
 
   .feature-card:hover { border-color: rgba(232,255,71,0.2); transform: translateY(-4px); }
 
+  .feature-card.featured {
+    border: 2px solid var(--accent);
+    background: linear-gradient(135deg, rgba(232,255,71,0.08), rgba(232,255,71,0.02));
+  }
+
+  .feature-card.featured:hover { border-color: var(--accent); }
+
   .feature-card.wide {
     grid-column: span 2;
     display: grid;
@@ -669,7 +676,7 @@
   }
 
   .feature-card h3 { font-size: 1.15rem; margin-bottom: 12px; }
-  .feature-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+  .feature-card p { font-size: 1rem; color: var(--muted); line-height: 1.7; }
 
   .feature-tag {
     display: inline-block;
@@ -1001,44 +1008,77 @@
 <section>
   <div class="section-inner">
     <div class="section-tag" id="tag-feat">Возможности</div>
-    <h2 class="section-title" id="title-feat">Всё, что нужно владельцу сервиса</h2>
-    <p class="section-sub" id="sub-feat">От первого сообщения клиента до записи в календарь — один инструмент.</p>
+    <h2 class="section-title" id="title-feat">Что умеет ваш новый менеджер</h2>
+    <p class="section-sub" id="sub-feat">Не просто чат-бот с шаблонами. Полноценный инструмент, который работает с вашим прайсом, расписанием и клиентами.</p>
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">💬</div>
-        <h3 id="feat1-h">WhatsApp & Telegram</h3>
-        <p id="feat1-p">Работает в обоих мессенджерах одновременно. Клиент пишет туда, где ему удобно.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🧠</div>
-        <h3 id="feat2-h">Понимает контекст разговора</h3>
-        <p id="feat2-p">Помнит, что спрашивал клиент раньше. Не задаёт одни и те же вопросы дважды. Звучит как человек.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">👤</div>
-        <h3 id="feat3-h">Подключение живого менеджера</h3>
-        <p id="feat3-p">Если вопрос сложный или клиент нервничает — AI мгновенно передаёт чат вам. Вы берёте управление, когда надо.</p>
-      </div>
-      <div class="feature-card wide">
+      <div class="feature-card featured wide">
         <div>
-          <div class="feature-tag" id="feat4-tag">Ваш календарь</div>
-          <h3 id="feat4-h">Видеть каждую заявку в реальном времени</h3>
-          <p id="feat4-p">Настраиваем под вас: ваш прайс, услуги, способ работы. Без сложных интеграций — всё работает сразу после включения.</p>
+          <div class="feature-tag" id="feat-accent-tag">Ключевое отличие</div>
+          <h3 id="feat-accent-h">Настроен под ваш сервис</h3>
+          <p id="feat-accent-p">InGarage — не коробочный бот с одинаковыми ответами для всех. Каждая деталь подстраивается под вас: прайс, расписание, стиль общения, правила работы. Если в текущем решении вам чего-то не хватает — мы быстро это внедрим.</p>
         </div>
         <div>
           <div class="admin-panel">
-            <div class="admin-label" id="admin-label">ВАШ КАЛЕНДАРЬ</div>
+            <div class="admin-label" id="admin-label">НАСТРОЙКИ БОТА</div>
             <div class="admin-row highlight">
-              <span id="admin-r1">🔔 Иванов А. → Замена масла</span>
-              <span style="color:var(--accent)">завтра 10:00</span>
+              <span id="admin-r1">🎨 Тон общения</span>
+              <span style="color:var(--accent)">Дружелюбный</span>
             </div>
             <div class="admin-row">
-              <span id="admin-r2">⏰ Напомнить Петровой М. за 2ч</span>
-              <span style="color:#a8ff3e">подтвердить</span>
+              <span id="admin-r2">📋 Прайс-лист</span>
+              <span style="color:#a8ff3e">24 услуги</span>
             </div>
             <div class="admin-row">
-              <span id="admin-r3">📊 Сегодня: 5 записей • ~47K ₽</span>
-              <span style="color:var(--muted)">12:00</span>
+              <span id="admin-r3">📅 Расписание</span>
+              <span style="color:#a8ff3e">Подключено</span>
+            </div>
+            <div class="admin-row">
+              <span id="admin-r4">⚡ Внедрение новых функций</span>
+              <span style="color:var(--accent)">по запросу</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3 id="feat1-h">Знает ваши цены</h3>
+        <p id="feat1-p">Загрузили прайс и описание услуг — бот отвечает по ним. Спросили «сколько диагностика» — назвал вашу цену, а не среднюю по рынку.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3 id="feat2-h">Записывает на реальное время</h3>
+        <p id="feat2-p">Бот подключён к расписанию. Предлагает свободные слоты и тут же бронирует. Никаких накладок и двойных записей.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎛️</div>
+        <h3 id="feat3-h">Говорит как вы</h3>
+        <p id="feat3-p">Выбираете тон: на «ты» или на «вы», с юмором или строго. Настраиваете приветствие и манеру. Клиент не заметит, что это бот.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <h3 id="feat4-h">Зовёт вас, когда надо</h3>
+        <p id="feat4-p">Сложный вопрос или «позовите человека» — вы получаете уведомление в Telegram. Подключаетесь за секунду.</p>
+      </div>
+      <div class="feature-card wide">
+        <div>
+          <div class="feature-icon">📊</div>
+          <h3 id="feat5-h">Цифры вместо ощущений</h3>
+          <p id="feat5-p">Сколько заявок, какие услуги популярны, как загружены мастера. Данные для решений, а не догадки.</p>
+        </div>
+        <div>
+          <div class="admin-panel">
+            <div class="admin-label" id="admin-label2">АНАЛИТИКА ЗА НЕДЕЛЮ</div>
+            <div class="admin-row highlight">
+              <span id="admin-a1">💬 Обращений</span>
+              <span style="color:var(--accent)">127</span>
+            </div>
+            <div class="admin-row">
+              <span id="admin-a2">📅 Записей</span>
+              <span style="color:#a8ff3e">43</span>
+            </div>
+            <div class="admin-row">
+              <span id="admin-a3">🏆 Популярная услуга</span>
+              <span style="color:var(--muted)">Замена масла</span>
             </div>
           </div>
         </div>
@@ -1258,21 +1298,30 @@ const t = {
     'step3-h': 'Заявка в вашем календаре',
     'step3-p': 'Клиент автоматически добавлен в расписание. Если вопрос сложный — живой менеджер получает уведомление и подключается.',
     'tag-feat': 'Возможности',
-    'title-feat': 'Всё, что нужно владельцу сервиса',
-    'sub-feat': 'От первого сообщения клиента до записи в календарь — один инструмент.',
-    'feat1-h': 'WhatsApp & Telegram',
-    'feat1-p': 'Работает в обоих мессенджерах одновременно. Клиент пишет туда, где ему удобно.',
-    'feat2-h': 'Понимает контекст разговора',
-    'feat2-p': 'Помнит, что спрашивал клиент раньше. Не задаёт одни и те же вопросы дважды. Звучит как человек.',
-    'feat3-h': 'Подключение живого менеджера',
-    'feat3-p': 'Если вопрос сложный или клиент нервничает — AI мгновенно передаёт чат вам. Вы берёте управление, когда надо.',
-    'feat4-tag': 'Ваш календарь',
-    'feat4-h': 'Видеть каждую заявку в реальном времени',
-    'feat4-p': 'Настраиваем под вас: ваш прайс, услуги, способ работы. Без сложных интеграций — всё работает сразу после включения.',
-    'admin-label': 'ВАШ КАЛЕНДАРЬ',
-    'admin-r1': '🔔 Иванов А. → Замена масла',
-    'admin-r2': '⏰ Напомнить Петровой М. за 2ч',
-    'admin-r3': '📊 Сегодня: 5 записей • ~47K ₽',
+    'title-feat': 'Что умеет ваш новый менеджер',
+    'sub-feat': 'Не просто чат-бот с шаблонами. Полноценный инструмент, который работает с вашим прайсом, расписанием и клиентами.',
+    'feat-accent-tag': 'Ключевое отличие',
+    'feat-accent-h': 'Настроен под ваш сервис',
+    'feat-accent-p': 'InGarage — не коробочный бот с одинаковыми ответами для всех. Каждая деталь подстраивается под вас: прайс, расписание, стиль общения, правила работы. Если в текущем решении вам чего-то не хватает — мы быстро это внедрим.',
+    'feat1-h': 'Знает ваши цены',
+    'feat1-p': 'Загрузили прайс и описание услуг — бот отвечает по ним. Спросили «сколько диагностика» — назвал вашу цену, а не среднюю по рынку.',
+    'feat2-h': 'Записывает на реальное время',
+    'feat2-p': 'Бот подключён к расписанию. Предлагает свободные слоты и тут же бронирует. Никаких накладок и двойных записей.',
+    'feat3-h': 'Говорит как вы',
+    'feat3-p': 'Выбираете тон: на «ты» или на «вы», с юмором или строго. Настраиваете приветствие и манеру. Клиент не заметит, что это бот.',
+    'feat4-h': 'Зовёт вас, когда надо',
+    'feat4-p': 'Сложный вопрос или «позовите человека» — вы получаете уведомление в Telegram. Подключаетесь за секунду.',
+    'feat5-h': 'Цифры вместо ощущений',
+    'feat5-p': 'Сколько заявок, какие услуги популярны, как загружены мастера. Данные для решений, а не догадки.',
+    'admin-label': 'НАСТРОЙКИ БОТА',
+    'admin-r1': '🎨 Тон общения',
+    'admin-r2': '📋 Прайс-лист',
+    'admin-r3': '📅 Расписание',
+    'admin-r4': '⚡ Внедрение новых функций',
+    'admin-label2': 'АНАЛИТИКА ЗА НЕДЕЛЮ',
+    'admin-a1': '💬 Обращений',
+    'admin-a2': '📅 Записей',
+    'admin-a3': '🏆 Популярная услуга',
     'tag-testimonials': 'Результаты',
     'title-testimonials': 'Что говорят владельцы сервисов',
     'sub-testimonials': 'Они подключили InGarage и перестали терять клиентов. Вот их истории.',
@@ -1375,21 +1424,30 @@ const t = {
     'step3-h': 'Lead in your calendar',
     'step3-p': 'Client is automatically added to your schedule. If the question is complex, a human manager gets notified and joins in.',
     'tag-feat': 'Capabilities',
-    'title-feat': 'Everything a shop owner needs',
-    'sub-feat': 'From the first client message to a calendar booking — one tool.',
-    'feat1-h': 'WhatsApp & Telegram',
-    'feat1-p': 'Works in both messengers simultaneously. Clients write wherever is convenient for them.',
-    'feat2-h': 'Understands conversation context',
-    'feat2-p': 'Remembers what the client asked before. Never asks the same thing twice. Sounds human.',
-    'feat3-h': 'Seamless human handoff',
-    'feat3-p': 'If a question is complex or the client needs personal attention — AI instantly passes the chat to you. You take control when needed.',
-    'feat4-tag': 'Your calendar',
-    'feat4-h': 'See every lead in real-time',
-    'feat4-p': 'We configure everything for you: your prices, services, and workflow. No complex integrations — it works immediately after setup.',
-    'admin-label': 'YOUR CALENDAR',
-    'admin-r1': '🔔 Johnson A. → Oil change',
-    'admin-r2': '⏰ Remind Smith M. in 2h',
-    'admin-r3': '📊 Today: 5 bookings • ~$560 revenue',
+    'title-feat': 'What your new manager can do',
+    'sub-feat': 'Not just a chatbot with templates. A full-featured tool that works with your price list, schedule, and customers.',
+    'feat-accent-tag': 'Key differentiator',
+    'feat-accent-h': 'Built around your shop',
+    'feat-accent-p': 'InGarage is not a one-size-fits-all bot. Every detail is tailored to you: your prices, schedule, communication style, and business rules. If you need something we don\'t have yet — we\'ll build it fast.',
+    'feat1-h': 'Knows your prices',
+    'feat1-p': 'Upload your price list and service descriptions — the bot answers using them. "How much for diagnostics?" — it quotes your price, not the market average.',
+    'feat2-h': 'Books real time slots',
+    'feat2-p': 'The bot is connected to your schedule. It offers available slots and books instantly. No overlaps, no double bookings.',
+    'feat3-h': 'Talks like you do',
+    'feat3-p': 'Choose the tone: formal or casual, with humor or straight to the point. Set the greeting and manner. The client won\'t notice it\'s a bot.',
+    'feat4-h': 'Calls you when needed',
+    'feat4-p': 'Tricky question or "let me talk to a person" — you get a Telegram notification. Jump in within a second.',
+    'feat5-h': 'Numbers, not guesswork',
+    'feat5-p': 'How many leads, which services are popular, how busy your mechanics are. Data for decisions, not gut feelings.',
+    'admin-label': 'BOT SETTINGS',
+    'admin-r1': '🎨 Communication tone',
+    'admin-r2': '📋 Price list',
+    'admin-r3': '📅 Schedule',
+    'admin-r4': '⚡ New features',
+    'admin-label2': 'WEEKLY ANALYTICS',
+    'admin-a1': '💬 Inquiries',
+    'admin-a2': '📅 Bookings',
+    'admin-a3': '🏆 Top service',
     'tag-testimonials': 'Results',
     'title-testimonials': 'What shop owners are saying',
     'sub-testimonials': 'They connected InGarage and stopped losing clients. Here are their stories.',
