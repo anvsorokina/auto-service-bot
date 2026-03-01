@@ -613,34 +613,6 @@
     50% { transform: translateY(-8px); }
   }
 
-  /* STATS */
-  .stats {
-    padding: 60px 48px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .stats-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 48px;
-  }
-
-  .stat { text-align: center; }
-
-  .stat-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-
-  .stat-label { font-size: 0.9rem; color: var(--muted); }
-
   /* SECTIONS */
   section { padding: 100px 48px; }
   .section-inner { max-width: 1200px; margin: 0 auto; }
@@ -946,8 +918,6 @@
     .hero-grid { grid-template-columns: 1fr; gap: 48px; }
     .hero-visual { order: -1; }
     .crm-badge { right: 0; }
-    .stats { padding: 48px 24px; }
-    .stats-inner { grid-template-columns: 1fr; gap: 32px; }
     section { padding: 72px 24px; }
     .problems-grid { grid-template-columns: 1fr; }
     .testimonials-grid { grid-template-columns: 1fr; }
@@ -1028,24 +998,6 @@
     </div>
   </div>
 </section>
-
-<!-- STATS -->
-<div class="stats">
-  <div class="stats-inner">
-    <div class="stat">
-      <div class="stat-num">15–20</div>
-      <div class="stat-label" id="stat1">заявок теряет сервис в месяц</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">&lt;3с</div>
-      <div class="stat-label" id="stat2">Ответ на любое время</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">100%</div>
-      <div class="stat-label" id="stat3">Отслеживание заявок</div>
-    </div>
-  </div>
-</div>
 
 <!-- PROBLEMS -->
 <section>
@@ -1362,9 +1314,6 @@ const t = {
     'msg4': 'Отлично, записал вас на завтра в 10:00. Вот как нас найти:',
     'msg-map-text': 'Открыть на Яндекс Картах',
     'crm-badge': '✓ Записано в календарь',
-    'stat1': 'заявок теряет сервис в месяц',
-    'stat2': 'Ответ на любое время',
-    'stat3': 'Отслеживание заявок',
     'problem-stat': '<strong>Факт:</strong> <span id="problem-stat-text">Клиент пишет в 23:00 в воскресенье — никто не отвечает. Утром он уже записался в другой сервис. И вы об этом никогда не узнаете.</span>',
     'problem-stat-text': 'Клиент пишет в 23:00 в воскресенье — никто не отвечает. Утром он уже записался в другой сервис. И вы об этом никогда не узнаете.',
     'tag-problem': 'Проблема',
@@ -1487,9 +1436,6 @@ const t = {
     'msg4': 'Done! You\'re booked for tomorrow at 10:00. Here\'s how to find us:',
     'msg-map-text': 'Open on Google Maps',
     'crm-badge': '✓ Booked in your calendar',
-    'stat1': 'leads lost per month',
-    'stat2': 'Reply anytime, anywhere',
-    'stat3': 'Lead tracking',
     'problem-stat-text': 'A customer messages at 11pm on Sunday — nobody replies. By morning they\'re booked at another shop. And you\'ll never know it happened.',
     'tag-problem': 'The Problem',
     'title-problem': 'Why you lose clients every month',
