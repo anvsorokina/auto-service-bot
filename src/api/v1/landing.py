@@ -23,7 +23,7 @@ _TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 class DemoRequest(BaseModel):
     name: str
     shop_name: str
-    phone: str
+    phone: str = ""
     telegram: str = ""
     email: str = ""
     country: str = "ru"
@@ -66,8 +66,9 @@ async def submit_demo_request(body: DemoRequest, request: Request):
         "🔔 <b>Новая заявка с лендинга</b>\n",
         f"👤 <b>Имя:</b> {body.name}",
         f"🏪 <b>Сервис:</b> {body.shop_name}",
-        f"📞 <b>Телефон:</b> {body.phone}",
     ]
+    if body.phone:
+        lines.append(f"📞 <b>Телефон:</b> {body.phone}")
     if body.telegram:
         lines.append(f"✈️ <b>Telegram:</b> {body.telegram}")
     if body.email:

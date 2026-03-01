@@ -182,12 +182,13 @@
     padding: 40px;
     text-align: center;
     transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
   }
 
   .pricing-card.featured {
     border-color: var(--accent);
     background: linear-gradient(135deg, rgba(232,255,71,0.05), rgba(232,255,71,0.02));
-    transform: scale(1.02);
   }
 
   .pricing-card:hover { border-color: rgba(232,255,71,0.3); }
@@ -208,7 +209,13 @@
     margin-bottom: 8px;
   }
 
-  .pricing-amount.text { font-size: 2rem; }
+  .pricing-amount.text {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.5rem;
+  }
 
   .pricing-period {
     font-size: 1rem;
@@ -223,6 +230,7 @@
     gap: 16px;
     margin: 32px 0;
     font-size: 0.95rem;
+    flex-grow: 1;
   }
 
   .pricing-includes li {
@@ -721,6 +729,16 @@
     margin-bottom: 16px;
   }
 
+  .form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .form-contact-hint {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(0,0,0,0.5);
+    margin-bottom: 8px;
+    margin-top: 4px;
+  }
+
   .form-group { display: flex; flex-direction: column; gap: 8px; }
 
   .form-group label {
@@ -835,10 +853,9 @@
     .features-grid { grid-template-columns: 1fr; }
     .feature-card.wide { grid-column: span 1; grid-template-columns: 1fr; gap: 24px; }
     .pricing-grid { grid-template-columns: 1fr; }
-    .pricing-card.featured { transform: scale(1); }
     .cta-section { padding: 72px 24px; }
     .demo-form { padding: 28px 20px; }
-    .form-row { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr !important; }
     footer { flex-direction: column; align-items: flex-start; padding: 36px 24px; }
   }
 </style>
@@ -864,7 +881,7 @@
     <div>
       <div class="hero-badge" id="hero-badge">24/7 менеджер в мессенджере</div>
       <h1 id="hero-h1">Менеджер, который<br><em>на связи 24/7</em></h1>
-      <p class="hero-sub" id="hero-sub">Пока вы заняты машиной или отдыхаете, бот ловит каждое сообщение в WhatsApp и Telegram: уточняет детали, называет цену и записывает клиента на свободное время. Работает как живой менеджер, только без выходных, обедов и забытых заявок.</p>
+      <p class="hero-sub" id="hero-sub">Пока вы заняты машиной или отдыхаете, бот ловит каждое сообщение в WhatsApp и Telegram: уточняет детали, называет цену и записывает клиента на свободное время. Работает как живой менеджер, только без выходных, перерывов на обед и забытых заявок.</p>
       <div class="hero-ctas">
         <a href="https://t.me/InGarage_AI_bot" target="_blank" class="btn-primary" id="btn-hero-demo">Попробовать →</a>
         <a href="#features" class="btn-secondary" id="btn-hero-how">Как работает →</a>
@@ -1131,21 +1148,22 @@
             <input type="text" id="inp-shop" placeholder="Автосервис №1" required>
           </div>
         </div>
-        <div class="form-row">
+        <div class="form-contact-hint" id="lbl-contact-hint">Как с вами связаться? Достаточно одного способа</div>
+        <div class="form-row form-row-3">
           <div class="form-group">
             <label id="lbl-phone">Телефон</label>
-            <input type="tel" id="inp-phone" placeholder="+7 900 000 00 00" required>
+            <input type="tel" id="inp-phone" placeholder="+7 900 000 00 00">
           </div>
           <div class="form-group">
             <label id="lbl-telegram">Telegram</label>
             <input type="text" id="inp-telegram" placeholder="@username">
           </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
             <label id="lbl-email">Почта</label>
             <input type="email" id="inp-email" placeholder="name@mail.ru">
           </div>
+        </div>
+        <div class="form-row" style="grid-template-columns:1fr;">
           <div class="form-group">
             <label id="lbl-country">Страна</label>
             <select id="inp-country">
@@ -1188,7 +1206,7 @@ const t = {
     'nav-cta-text': 'Посмотреть в деле',
     'hero-badge': '24/7 менеджер в мессенджере',
     'hero-h1': 'Менеджер, который<br><em>на связи 24/7</em>',
-    'hero-sub': 'Пока вы заняты машиной или отдыхаете, бот ловит каждое сообщение в WhatsApp и Telegram: уточняет детали, называет цену и записывает клиента на свободное время. Работает как живой менеджер, только без выходных, обедов и забытых заявок.',
+    'hero-sub': 'Пока вы заняты машиной или отдыхаете, бот ловит каждое сообщение в WhatsApp и Telegram: уточняет детали, называет цену и записывает клиента на свободное время. Работает как живой менеджер, только без выходных, перерывов на обед и забытых заявок.',
     'btn-hero-demo': 'Попробовать →',
     'btn-hero-how': 'Как работает →',
     'chat-status': 'Онлайн • Отвечает мгновенно',
@@ -1282,6 +1300,7 @@ const t = {
     'cta-h': 'Оставьте заявку — покажем, как это работает',
     'cta-p': 'Свяжемся с вами, проведём демонстрацию и ответим на все вопросы. Без обязательств — просто посмотрите, подходит ли вам.',
     'lbl-name': 'Ваше имя', 'lbl-shop': 'Название сервиса',
+    'lbl-contact-hint': 'Как с вами связаться? Достаточно одного способа',
     'lbl-phone': 'Телефон', 'lbl-telegram': 'Telegram', 'lbl-email': 'Почта', 'lbl-country': 'Страна',
     'inp-name': {placeholder: 'Александр'}, 'inp-shop': {placeholder: 'Автосервис №1'},
     'inp-phone': {placeholder: '+7 900 000 00 00'}, 'inp-telegram': {placeholder: '@username'}, 'inp-email': {placeholder: 'name@mail.ru'},
@@ -1295,7 +1314,7 @@ const t = {
     'nav-cta-text': 'See it in action',
     'hero-badge': '24/7 manager in your messenger',
     'hero-h1': 'A manager that\'s<br><em>always online, 24/7</em>',
-    'hero-sub': 'While you\'re busy with a car or taking a break, the bot catches every message on WhatsApp and Telegram: clarifies details, quotes the price, and books the client into an open slot. Works like a real manager — just without days off, lunch breaks, or forgotten requests.',
+    'hero-sub': 'While you\'re busy with a car or taking a break, the bot catches every message on WhatsApp and Telegram: clarifies details, quotes the price, and books the client into an open slot. Works like a real manager — just without days off, lunch breaks, or missed leads.',
     'btn-hero-demo': 'Try it →',
     'btn-hero-how': 'How it works →',
     'chat-status': 'Online • Replies instantly',
@@ -1388,6 +1407,7 @@ const t = {
     'cta-h': 'Leave a request — we\'ll show you how it works',
     'cta-p': 'We\'ll get in touch, walk you through a demo, and answer all your questions. No commitment — just see if it\'s right for you.',
     'lbl-name': 'Your name', 'lbl-shop': 'Shop name',
+    'lbl-contact-hint': 'How should we reach you? One field is enough',
     'lbl-phone': 'Phone', 'lbl-telegram': 'Telegram', 'lbl-email': 'Email', 'lbl-country': 'Country',
     'inp-name': {placeholder: 'Alexander'}, 'inp-shop': {placeholder: 'Auto Shop #1'},
     'inp-phone': {placeholder: '+1 555 000 0000'}, 'inp-telegram': {placeholder: '@username'}, 'inp-email': {placeholder: 'name@mail.com'},
@@ -1418,6 +1438,17 @@ function setLang(lang) {
 
 async function submitForm(e) {
   e.preventDefault();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const tg = document.getElementById('inp-telegram').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  if (!phone && !tg && !email) {
+    const hint = document.getElementById('lbl-contact-hint');
+    hint.style.color = '#ff5c35';
+    hint.style.fontWeight = '700';
+    setTimeout(() => { hint.style.color = ''; hint.style.fontWeight = ''; }, 3000);
+    return;
+  }
+
   const btn = document.getElementById('btn-submit');
   const origText = btn.textContent;
   btn.disabled = true;
