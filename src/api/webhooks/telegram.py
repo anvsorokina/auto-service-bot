@@ -86,6 +86,7 @@ async def telegram_webhook(
             bot=bot,
             engine=engine,
             shop_id=shop_id,
+            shop_config=shop_config,
         )
     elif update.callback_query:
         await handle_callback(
@@ -93,6 +94,7 @@ async def telegram_webhook(
             bot=bot,
             engine=engine,
             shop_id=shop_id,
+            shop_config=shop_config,
         )
 
     return {"ok": True}

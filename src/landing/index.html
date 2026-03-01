@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InGarage AI — AI-менеджер для автосервиса</title>
+<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/static/logo-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -429,11 +432,12 @@
   .hero h1 em { font-style: normal; color: var(--accent); }
 
   .hero-sub {
-    font-size: 1.1rem;
-    color: var(--muted);
-    line-height: 1.7;
+    font-size: 1.3rem;
+    color: rgba(245,243,238,0.85);
+    line-height: 1.75;
     margin-bottom: 44px;
-    max-width: 480px;
+    max-width: 520px;
+    font-weight: 400;
   }
 
   .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -494,9 +498,15 @@
   .chat-avatar {
     width: 36px; height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), #a8ff3e);
+    background: var(--accent);
     display: flex; align-items: center; justify-content: center;
     font-size: 1rem; flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .chat-avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
   }
 
   .chat-info strong { font-family: 'Syne', sans-serif; font-size: 0.85rem; display: block; }
@@ -552,6 +562,27 @@
 
   .msg-time { font-size: 0.65rem; color: var(--muted); margin-top: 4px; text-align: right; }
   .msg.client .msg-time { text-align: left; }
+
+  .msg-map-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.15);
+    border: 1.5px solid rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 8px 14px;
+    margin-top: 8px;
+    text-decoration: none;
+    color: var(--black);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .msg-map-btn:hover { background: rgba(0,0,0,0.22); }
+
+  .msg-map-icon { font-size: 1rem; }
 
   .msg:nth-child(1) { animation-delay: 0.3s; }
   .msg:nth-child(2) { animation-delay: 1s; }
@@ -954,17 +985,17 @@
   <div class="hero-grid">
     <div>
       <div class="hero-badge" id="hero-badge">24/7 менеджер в мессенджере</div>
-      <h1 id="hero-h1">Вы спите.<br><em>AI работает.</em><br>Клиент записан.</h1>
-      <p class="hero-sub" id="hero-sub">Пока вы спите, работаете или заняты под машиной, InGarage AI ловит каждое сообщение в WhatsApp и Telegram. Консультирует, уточняет детали, записывает клиента в календарь. Ноль потерянных заявок. Ноль нервов.</p>
+      <h1 id="hero-h1">Менеджер, который<br><em>на связи 24/7</em></h1>
+      <p class="hero-sub" id="hero-sub">Пока вы спите, работаете или заняты под машиной, InGarage AI ловит каждое сообщение в WhatsApp и Telegram. Консультирует, уточняет детали, записывает клиента в календарь.</p>
       <div class="hero-ctas">
-        <a href="#try-bot" class="btn-primary" id="btn-hero-demo">Потестить с ботом</a>
+        <a href="https://t.me/InGarage_AI_bot" target="_blank" class="btn-primary" id="btn-hero-demo">Попробовать →</a>
         <a href="#how" class="btn-secondary" id="btn-hero-how">Как работает →</a>
       </div>
     </div>
     <div class="hero-visual">
       <div class="chat-mockup">
         <div class="chat-header">
-          <div class="chat-avatar">🤖</div>
+          <div class="chat-avatar"><img src="/static/logo-192.png" alt="IG"></div>
           <div class="chat-info">
             <strong>InGarage AI</strong>
             <div class="chat-status" id="chat-status">Онлайн • Отвечает мгновенно</div>
@@ -972,19 +1003,23 @@
         </div>
         <div class="chat-body">
           <div class="msg client">
-            <span id="msg1">Привет, сколько стоит замена масла на Camry 2020?</span>
+            <span id="msg1">Привет, сколько стоит замена масла на камри 2015?</span>
             <div class="msg-time">22:47</div>
           </div>
           <div class="msg ai">
-            <span id="msg2">Добрый вечер! Замена масла на Camry 2020 — от 3 500 ₽, вместе с фильтром. Записать на завтра?</span>
+            <span id="msg2">Добрый вечер! Будет стоить от 3 500 ₽, вместе с фильтром. На когда вас записать?</span>
             <div class="msg-time">22:47</div>
           </div>
           <div class="msg client">
-            <span id="msg3">Да, на 10 утра</span>
+            <span id="msg3">На завтра, на 10 утра</span>
             <div class="msg-time">22:48</div>
           </div>
           <div class="msg ai">
-            <span id="msg4">Отлично! Записал на завтра в 10:00. Пришлём напоминание за час. Ваш номер авто?</span>
+            <span id="msg4">Отлично, записал вас на завтра в 10:00. Вот как нас найти:</span>
+            <a href="#" class="msg-map-btn" id="msg-map-link" onclick="return false;">
+              <span class="msg-map-icon">📍</span>
+              <span id="msg-map-text">Открыть на Яндекс Картах</span>
+            </a>
             <div class="msg-time">22:48</div>
           </div>
         </div>
@@ -1048,7 +1083,7 @@
       <h3 id="try-bot-h">Хотите увидеть в деле?</h3>
       <p id="try-bot-p">Напишите нашему боту в Telegram или WhatsApp и сами убедитесь, как он отвечает клиентам. Никаких обязательств.</p>
       <div class="try-bot-buttons">
-        <a href="https://t.me/ingarageaibot" class="btn-try-bot" target="_blank">
+        <a href="https://t.me/InGarage_AI_bot" class="btn-try-bot" target="_blank">
           <span>📱</span>
           <span id="try-bot-tg">Попробовать в Telegram</span>
         </a>
@@ -1316,15 +1351,16 @@ const t = {
   ru: {
     'nav-cta-text': 'Посмотреть в деле',
     'hero-badge': '24/7 менеджер в мессенджере',
-    'hero-h1': 'Вы спите.<br><em>AI работает.</em><br>Клиент записан.',
-    'hero-sub': 'Пока вы спите, работаете или заняты под машиной, InGarage AI ловит каждое сообщение в WhatsApp и Telegram. Консультирует, уточняет детали, записывает клиента в календарь. Ноль потерянных заявок. Ноль нервов.',
-    'btn-hero-demo': 'Потестить с ботом',
+    'hero-h1': 'Менеджер, который<br><em>на связи 24/7</em>',
+    'hero-sub': 'Пока вы спите, работаете или заняты под машиной, InGarage AI ловит каждое сообщение в WhatsApp и Telegram. Консультирует, уточняет детали, записывает клиента в календарь.',
+    'btn-hero-demo': 'Попробовать →',
     'btn-hero-how': 'Как работает →',
     'chat-status': 'Онлайн • Отвечает мгновенно',
-    'msg1': 'Привет, сколько стоит замена масла на Camry 2020?',
-    'msg2': 'Добрый вечер! Замена масла на Camry 2020 — от 3 500 ₽, вместе с фильтром. Записать на завтра?',
-    'msg3': 'Да, на 10 утра',
-    'msg4': 'Отлично! Записал на завтра в 10:00. Пришлём напоминание за час. Ваш номер авто?',
+    'msg1': 'Привет, сколько стоит замена масла на камри 2015?',
+    'msg2': 'Добрый вечер! Будет стоить от 3 500 ₽, вместе с фильтром. На когда вас записать?',
+    'msg3': 'На завтра, на 10 утра',
+    'msg4': 'Отлично, записал вас на завтра в 10:00. Вот как нас найти:',
+    'msg-map-text': 'Открыть на Яндекс Картах',
     'crm-badge': '✓ Записано в календарь',
     'stat1': 'заявок теряет сервис в месяц',
     'stat2': 'Ответ на любое время',
@@ -1440,15 +1476,16 @@ const t = {
   en: {
     'nav-cta-text': 'See it in action',
     'hero-badge': '24/7 manager in your messenger',
-    'hero-h1': 'You sleep.<br><em>AI works.</em><br>Client booked.',
-    'hero-sub': 'While you sleep, work, or have your hands full, InGarage AI catches every message in WhatsApp and Telegram. Consults with clients, clarifies details, books them into your calendar. Zero lost leads. Zero stress.',
-    'btn-hero-demo': 'Try the bot',
+    'hero-h1': 'A manager that\'s<br><em>always online, 24/7</em>',
+    'hero-sub': 'While you sleep, work, or have your hands full, InGarage AI catches every message in WhatsApp and Telegram. Consults with clients, clarifies details, books them into your calendar.',
+    'btn-hero-demo': 'Try it →',
     'btn-hero-how': 'How it works →',
     'chat-status': 'Online • Replies instantly',
-    'msg1': 'Hi, how much for an oil change on a 2020 Camry?',
-    'msg2': 'Good evening! Oil change for a 2020 Camry starts at $45 including filter. Want to book for tomorrow?',
-    'msg3': 'Yes, 10am works',
-    'msg4': 'Done! You\'re booked for tomorrow at 10:00. We\'ll remind you an hour before. Your plate number?',
+    'msg1': 'Hi, how much for an oil change on a 2015 Camry?',
+    'msg2': 'Good evening! It starts at $45 including filter. When would you like to book?',
+    'msg3': 'Tomorrow at 10am',
+    'msg4': 'Done! You\'re booked for tomorrow at 10:00. Here\'s how to find us:',
+    'msg-map-text': 'Open on Google Maps',
     'crm-badge': '✓ Booked in your calendar',
     'stat1': 'leads lost per month',
     'stat2': 'Reply anytime, anywhere',

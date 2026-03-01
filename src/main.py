@@ -67,6 +67,10 @@ app = FastAPI(
 _admin_static = pathlib.Path(__file__).parent / "admin" / "static"
 app.mount("/admin/static", StaticFiles(directory=str(_admin_static)), name="admin-static")
 
+# Mount landing static files (favicon, logo)
+_landing_static = pathlib.Path(__file__).parent / "landing" / "static"
+app.mount("/static", StaticFiles(directory=str(_landing_static)), name="landing-static")
+
 # Include routers
 app.include_router(telegram_router)
 app.include_router(whatsapp_router)
