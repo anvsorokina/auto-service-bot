@@ -304,12 +304,26 @@ class ConversationEngine:
                     state, user_id, user_telegram_username, status="pending"
                 )
 
-            # Attach keyboard from next step (if any)
+            # Attach keyboard / initial message from next step
             if result.next_step != ConversationStep.COMPLETED.value:
                 next_handler = STEP_HANDLERS.get(result.next_step)
                 if next_handler:
                     next_result = await next_handler.get_initial_message(state)
-                    if next_result.keyboard:
+
+                    # For ESTIMATE step: always append the price estimate
+                    if result.next_step == ConversationStep.ESTIMATE.value and next_result.response_text:
+                        combined_text = result.response_text or ""
+                        if combined_text:
+                            combined_text += "\n\n" + next_result.response_text
+                        else:
+                            combined_text = next_result.response_text
+                        result = StepResult(
+                            response_text=combined_text,
+                            keyboard=next_result.keyboard,
+                            next_step=result.next_step,
+                            intent=result.intent,
+                        )
+                    elif next_result.keyboard:
                         result = StepResult(
                             response_text=result.response_text,
                             keyboard=next_result.keyboard,
