@@ -25,10 +25,13 @@ from src.conversation.steps.estimate import EstimateStep
 from src.conversation.steps.greeting import GreetingStep
 from src.conversation.steps.problem import ProblemStep
 from src.llm.unified import current_shop_config, process_message
+from src.bot.factory import get_or_create_bot
 from src.models.conversation import Conversation, Message
 from src.models.lead import Appointment, Lead
+from src.notifications.telegram import TelegramNotifier
 from src.pricing.engine import PricingEngine
 from src.schemas.conversation import ConversationStep, SessionState
+from src.schemas.lead import LeadNotification
 
 logger = structlog.get_logger()
 
@@ -840,6 +843,9 @@ class ConversationEngine:
                 status=status,
             )
 
+            # Send notification to shop owner
+            await self._notify_owner(lead, state, device_full_name)
+
         except Exception as e:
             import traceback
             logger.error(
@@ -854,11 +860,47 @@ class ConversationEngine:
             except Exception:
                 pass
 
+    # ─── Owner notification ──────────────────────────────────────────
+
+    async def _notify_owner(
+        self,
+        lead: Lead,
+        state: SessionState,
+        device_full_name: Optional[str],
+    ) -> None:
+        """Send Telegram notification to the shop owner about a new lead."""
+        config = self.shop_config or {}
+        owner_id = config.get("owner_telegram_id")
+        bot_token = config.get("telegram_bot_token")
+
+        if not owner_id or not bot_token:
+            return
+
+        try:
+            collected = state.collected
+            notification = LeadNotification(
+                lead_id=str(lead.id),
+                customer_name=collected.customer_name,
+                customer_phone=collected.customer_phone,
+                device_full_name=device_full_name,
+                problem_summary=collected.problem_description or collected.problem_category,
+                urgency=collected.urgency,
+                estimated_price_min=collected.estimated_price_min,
+                estimated_price_max=collected.estimated_price_max,
+                preferred_time=collected.preferred_time,
+                messages_count=state.messages_count,
+            )
+
+            bot = await get_or_create_bot(bot_token)
+            notifier = TelegramNotifier()
+            await notifier.send_lead_notification(bot, owner_id, notification)
+        except Exception as e:
+            logger.error("owner_notification_error", error=str(e), shop_id=state.shop_id)
+
     # ─── Time parsing ─────────────────────────────────────────────────
 
-    @staticmethod
-    def _parse_preferred_time(text: str) -> Optional[datetime]:
-        """Parse preferred_time text into a datetime.
+    def _parse_preferred_time(self, text: str) -> Optional[datetime]:
+        """Parse preferred_time text into a datetime using shop timezone.
 
         Handles patterns like:
           - "сегодня в 17:00", "сегодня в 17"
@@ -868,9 +910,18 @@ class ConversationEngine:
         Returns None if parsing fails.
         """
         import re as _re
+        from zoneinfo import ZoneInfo
 
         text = text.lower().strip()
-        now = datetime.now(timezone.utc)
+
+        # Use shop timezone for "today"/"tomorrow" calculations
+        tz_name = (self.shop_config or {}).get("timezone", "Europe/Moscow")
+        try:
+            tz = ZoneInfo(tz_name)
+        except Exception:
+            tz = ZoneInfo("Europe/Moscow")
+
+        now = datetime.now(tz)
 
         # Determine day
         if "завтра" in text:
@@ -899,7 +950,9 @@ class ConversationEngine:
             return None
 
         try:
-            return datetime(day.year, day.month, day.day, hour, minute, tzinfo=timezone.utc)
+            # Create datetime in shop timezone, then convert to UTC for storage
+            local_dt = datetime(day.year, day.month, day.day, hour, minute, tzinfo=tz)
+            return local_dt.astimezone(timezone.utc)
         except ValueError:
             return None
 

@@ -10,24 +10,24 @@ from src.models.device import DeviceCategory, RepairType
 
 
 DEVICE_CATEGORIES = [
-    {"slug": "smartphone", "name_ru": "Смартфон", "name_en": "Smartphone", "icon": "📱"},
-    {"slug": "laptop", "name_ru": "Ноутбук", "name_en": "Laptop", "icon": "💻"},
-    {"slug": "tablet", "name_ru": "Планшет", "name_en": "Tablet", "icon": "📟"},
-    {"slug": "smartwatch", "name_ru": "Умные часы", "name_en": "Smartwatch", "icon": "⌚"},
-    {"slug": "headphones", "name_ru": "Наушники", "name_en": "Headphones", "icon": "🎧"},
-    {"slug": "game_console", "name_ru": "Игровая консоль", "name_en": "Game Console", "icon": "🎮"},
+    {"slug": "sedan", "name_ru": "Легковой", "name_en": "Sedan", "icon": "🚗"},
+    {"slug": "suv", "name_ru": "Внедорожник / Кроссовер", "name_en": "SUV / Crossover", "icon": "🚙"},
+    {"slug": "truck", "name_ru": "Грузовой", "name_en": "Truck", "icon": "🚛"},
+    {"slug": "minivan", "name_ru": "Минивэн", "name_en": "Minivan", "icon": "🚐"},
+    {"slug": "commercial", "name_ru": "Коммерческий транспорт", "name_en": "Commercial", "icon": "🚚"},
 ]
 
 REPAIR_TYPES = [
-    {"slug": "screen_replacement", "name_ru": "Замена экрана", "name_en": "Screen Replacement", "category": "smartphone", "duration": 60},
-    {"slug": "battery_replacement", "name_ru": "Замена аккумулятора", "name_en": "Battery Replacement", "category": "smartphone", "duration": 30},
-    {"slug": "water_damage", "name_ru": "Ремонт после воды", "name_en": "Water Damage Repair", "category": "smartphone", "duration": 120},
-    {"slug": "charging_port", "name_ru": "Ремонт разъёма зарядки", "name_en": "Charging Port Repair", "category": "smartphone", "duration": 45},
-    {"slug": "camera_repair", "name_ru": "Ремонт камеры", "name_en": "Camera Repair", "category": "smartphone", "duration": 45},
-    {"slug": "speaker_repair", "name_ru": "Ремонт динамика", "name_en": "Speaker Repair", "category": "smartphone", "duration": 30},
-    {"slug": "back_glass", "name_ru": "Замена задней крышки", "name_en": "Back Glass Replacement", "category": "smartphone", "duration": 60},
-    {"slug": "button_repair", "name_ru": "Ремонт кнопок", "name_en": "Button Repair", "category": "smartphone", "duration": 30},
-    {"slug": "software_issue", "name_ru": "Программная проблема", "name_en": "Software Issue", "category": "smartphone", "duration": 30},
+    {"slug": "engine_repair", "name_ru": "Ремонт двигателя", "name_en": "Engine Repair", "category": "sedan", "duration": 240},
+    {"slug": "brake_repair", "name_ru": "Ремонт тормозов", "name_en": "Brake Repair", "category": "sedan", "duration": 120},
+    {"slug": "oil_change", "name_ru": "Замена масла / ТО", "name_en": "Oil Change / Maintenance", "category": "sedan", "duration": 60},
+    {"slug": "suspension_repair", "name_ru": "Ремонт подвески", "name_en": "Suspension Repair", "category": "sedan", "duration": 180},
+    {"slug": "diagnostics", "name_ru": "Диагностика", "name_en": "Diagnostics", "category": "sedan", "duration": 60},
+    {"slug": "electrical", "name_ru": "Электрика", "name_en": "Electrical", "category": "sedan", "duration": 120},
+    {"slug": "bodywork", "name_ru": "Кузов / покраска", "name_en": "Bodywork / Paint", "category": "sedan", "duration": 480},
+    {"slug": "ac_repair", "name_ru": "Ремонт кондиционера", "name_en": "AC Repair", "category": "sedan", "duration": 120},
+    {"slug": "transmission", "name_ru": "Ремонт коробки передач", "name_en": "Transmission Repair", "category": "sedan", "duration": 360},
+    {"slug": "tire_service", "name_ru": "Шины / колёса", "name_en": "Tire Service", "category": "sedan", "duration": 60},
 ]
 
 
