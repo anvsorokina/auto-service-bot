@@ -167,49 +167,6 @@
     margin-bottom: 4px;
   }
 
-  /* COMPARISON TABLE */
-  .comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--gray);
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-
-  .comparison-table th {
-    background: var(--gray2);
-    padding: 20px 24px;
-    text-align: left;
-
-    font-weight: 700;
-    font-size: 0.95rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .comparison-table td {
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
-  }
-
-  .comparison-table tr:last-child td { border-bottom: none; }
-
-  .comparison-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-
-  .comparison-feature {
-    font-weight: 500;
-    color: var(--white);
-  }
-
-  .check { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
-  .cross { color: var(--muted); font-size: 0.85rem; }
-  .partial { color: #a3a3a3; font-size: 0.85rem; }
-
-  .comparison-highlight {
-    background: rgba(232,255,71,0.08);
-  }
-
   /* PRICING */
   .pricing-grid {
     display: grid;
@@ -1120,63 +1077,6 @@
   </div>
 </section>
 
-<!-- COMPARISON -->
-<section>
-  <div class="section-inner">
-    <div class="section-tag" id="tag-comparison">Почему не просто...</div>
-    <h2 class="section-title" id="title-comparison">InGarage AI против остального</h2>
-    <p class="section-sub" id="sub-comparison">Сравните сами: наемный администратор, обычный чат-бот или наша система с AI.</p>
-    <table class="comparison-table">
-      <thead>
-        <tr>
-          <th id="compare-feature">Возможность</th>
-          <th id="compare-admin">Администратор</th>
-          <th id="compare-chatbot">Обычный чат-бот</th>
-          <th id="compare-ingarage">InGarage AI</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="comparison-feature" id="comp-24-7">Отвечает 24/7</td>
-          <td><span class="cross" id="comp-24-7-admin">❌</span></td>
-          <td><span class="check" id="comp-24-7-bot">✓</span></td>
-          <td class="comparison-highlight"><span class="check" id="comp-24-7-ig">✓</span></td>
-        </tr>
-        <tr>
-          <td class="comparison-feature" id="comp-understand">Понимает контекст</td>
-          <td><span class="check" id="comp-understand-admin">✓</span></td>
-          <td><span class="cross" id="comp-understand-bot">❌</span></td>
-          <td class="comparison-highlight"><span class="check" id="comp-understand-ig">✓</span></td>
-        </tr>
-        <tr>
-          <td class="comparison-feature" id="comp-natural">Общается как человек</td>
-          <td><span class="check" id="comp-natural-admin">✓</span></td>
-          <td><span class="cross" id="comp-natural-bot">❌</span></td>
-          <td class="comparison-highlight"><span class="check" id="comp-natural-ig">✓</span></td>
-        </tr>
-        <tr>
-          <td class="comparison-feature" id="comp-escalate">Передаёт сложные вопросы</td>
-          <td><span class="check" id="comp-escalate-admin">✓</span></td>
-          <td><span class="cross" id="comp-escalate-bot">❌</span></td>
-          <td class="comparison-highlight"><span class="check" id="comp-escalate-ig">✓</span></td>
-        </tr>
-        <tr>
-          <td class="comparison-feature" id="comp-records">Записывает в расписание</td>
-          <td><span class="check" id="comp-records-admin">✓</span></td>
-          <td><span class="partial" id="comp-records-bot">Частично</span></td>
-          <td class="comparison-highlight"><span class="check" id="comp-records-ig">✓</span></td>
-        </tr>
-        <tr>
-          <td class="comparison-feature" id="comp-cost">Стоимость в месяц</td>
-          <td><span id="comp-cost-admin">70K–150K ₽</span></td>
-          <td><span id="comp-cost-bot">2K–5K ₽</span></td>
-          <td class="comparison-highlight"><span id="comp-cost-ig"><strong>от 1 550 ₽</strong></span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
 <!-- PRICING -->
 <section>
   <div class="section-inner">
@@ -1331,37 +1231,6 @@ const t = {
     'testimonial2-metric': 'На 40% меньше ошибок',
     'testimonial2-name': 'Марина',
     'testimonial2-city': 'Автосервис «АвтоДок», Алматы',
-    'tag-comparison': 'Почему не просто...',
-    'title-comparison': 'InGarage AI против остального',
-    'sub-comparison': 'Сравните сами: наемный администратор, обычный чат-бот или наша система с AI.',
-    'compare-feature': 'Возможность',
-    'compare-admin': 'Администратор',
-    'compare-chatbot': 'Обычный чат-бот',
-    'compare-ingarage': 'InGarage AI',
-    'comp-24-7': 'Отвечает 24/7',
-    'comp-24-7-admin': '❌',
-    'comp-24-7-bot': '✓',
-    'comp-24-7-ig': '✓',
-    'comp-understand': 'Понимает контекст',
-    'comp-understand-admin': '✓',
-    'comp-understand-bot': '❌',
-    'comp-understand-ig': '✓',
-    'comp-natural': 'Общается как человек',
-    'comp-natural-admin': '✓',
-    'comp-natural-bot': '❌',
-    'comp-natural-ig': '✓',
-    'comp-escalate': 'Передаёт сложные вопросы',
-    'comp-escalate-admin': '✓',
-    'comp-escalate-bot': '❌',
-    'comp-escalate-ig': '✓',
-    'comp-records': 'Записывает в расписание',
-    'comp-records-admin': '✓',
-    'comp-records-bot': 'Частично',
-    'comp-records-ig': '✓',
-    'comp-cost': 'Стоимость в месяц',
-    'comp-cost-admin': '70K–150K ₽',
-    'comp-cost-bot': '2K–5K ₽',
-    'comp-cost-ig': '<strong>от 1 550 ₽</strong>',
     'tag-pricing': 'Цена',
     'title-pricing': 'Дешевле, чем один потерянный клиент',
     'sub-pricing': 'Стартовый пакет покрывает себя за один день. Нет лишних платежей, нет скрытых комиссий.',
@@ -1455,37 +1324,6 @@ const t = {
     'testimonial2-metric': '40% fewer errors',
     'testimonial2-name': 'Marina',
     'testimonial2-city': 'AutoDoc Service, Almaty',
-    'tag-comparison': 'Why not just...',
-    'title-comparison': 'InGarage AI vs. everything else',
-    'sub-comparison': 'Compare: hiring an admin, using a basic chatbot, or getting our AI system.',
-    'compare-feature': 'Feature',
-    'compare-admin': 'Hired Admin',
-    'compare-chatbot': 'Basic Chatbot',
-    'compare-ingarage': 'InGarage AI',
-    'comp-24-7': 'Works 24/7',
-    'comp-24-7-admin': '❌',
-    'comp-24-7-bot': '✓',
-    'comp-24-7-ig': '✓',
-    'comp-understand': 'Understands context',
-    'comp-understand-admin': '✓',
-    'comp-understand-bot': '❌',
-    'comp-understand-ig': '✓',
-    'comp-natural': 'Communicates naturally',
-    'comp-natural-admin': '✓',
-    'comp-natural-bot': '❌',
-    'comp-natural-ig': '✓',
-    'comp-escalate': 'Hands off complex questions',
-    'comp-escalate-admin': '✓',
-    'comp-escalate-bot': '❌',
-    'comp-escalate-ig': '✓',
-    'comp-records': 'Books in your schedule',
-    'comp-records-admin': '✓',
-    'comp-records-bot': 'Partial',
-    'comp-records-ig': '✓',
-    'comp-cost': 'Cost per month',
-    'comp-cost-admin': '$900-$2,000',
-    'comp-cost-bot': '$25-$70',
-    'comp-cost-ig': '<strong>from $20</strong>',
     'tag-pricing': 'Pricing',
     'title-pricing': 'Costs less than one lost customer',
     'sub-pricing': 'The starter plan pays for itself in one day. No hidden fees, no surprise charges.',
