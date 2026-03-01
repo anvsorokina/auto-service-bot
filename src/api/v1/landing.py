@@ -23,7 +23,9 @@ _TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 class DemoRequest(BaseModel):
     name: str
     shop_name: str
-    contact: str
+    phone: str
+    telegram: str = ""
+    email: str = ""
     country: str = "ru"
 
 
@@ -60,13 +62,18 @@ async def submit_demo_request(body: DemoRequest, request: Request):
         raise HTTPException(status_code=500, detail="Не удалось отправить заявку")
 
     country = COUNTRY_NAMES.get(body.country, body.country)
-    text = (
-        "🔔 <b>Новая заявка с лендинга</b>\n\n"
-        f"👤 <b>Имя:</b> {body.name}\n"
-        f"🏪 <b>Сервис:</b> {body.shop_name}\n"
-        f"📱 <b>Контакт:</b> {body.contact}\n"
-        f"🌍 <b>Страна:</b> {country}\n"
-    )
+    lines = [
+        "🔔 <b>Новая заявка с лендинга</b>\n",
+        f"👤 <b>Имя:</b> {body.name}",
+        f"🏪 <b>Сервис:</b> {body.shop_name}",
+        f"📞 <b>Телефон:</b> {body.phone}",
+    ]
+    if body.telegram:
+        lines.append(f"✈️ <b>Telegram:</b> {body.telegram}")
+    if body.email:
+        lines.append(f"📧 <b>Почта:</b> {body.email}")
+    lines.append(f"🌍 <b>Страна:</b> {country}")
+    text = "\n".join(lines)
 
     url = _TELEGRAM_API.format(token=token)
     payload = {
@@ -86,5 +93,5 @@ async def submit_demo_request(body: DemoRequest, request: Request):
         logger.error("landing_telegram_send_error", error=str(e), url=url, chat_id=chat_id)
         raise HTTPException(status_code=500, detail="Не удалось отправить заявку") from e
 
-    logger.info("landing_demo_request", name=body.name, shop=body.shop_name, country=body.country)
+    logger.info("landing_demo_request", name=body.name, shop=body.shop_name, phone=body.phone, country=body.country)
     return {"ok": True}

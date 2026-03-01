@@ -13,7 +13,9 @@ class DemoRequest(Base, UUIDMixin, TimestampMixin):
 
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     shop_name: Mapped[str] = mapped_column(String(300), nullable=False)
-    contact: Mapped[str] = mapped_column(String(100), nullable=False)
+    phone: Mapped[str] = mapped_column(String(100), nullable=False)
+    telegram: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, default="")
+    email: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, default="")
     country: Mapped[str] = mapped_column(String(10), default="ru")
     status: Mapped[str] = mapped_column(String(30), default="new")
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

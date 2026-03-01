@@ -170,7 +170,7 @@
   /* PRICING */
   .pricing-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 32px;
     margin-bottom: 60px;
   }
@@ -202,12 +202,13 @@
   }
 
   .pricing-amount {
-
     font-size: 3.5rem;
     font-weight: 800;
     color: var(--white);
     margin-bottom: 8px;
   }
+
+  .pricing-amount.text { font-size: 2rem; }
 
   .pricing-period {
     font-size: 1rem;
@@ -1088,12 +1089,26 @@
         <div class="pricing-period" id="pricing-period">в месяц</div>
         <ul class="pricing-includes">
           <li id="pricing-1">Боты в Telegram и WhatsApp</li>
-          <li id="pricing-2">До 500 диалогов в месяц</li>
+          <li id="pricing-2">До 100 диалогов в месяц</li>
           <li id="pricing-3">Веб-приложение: расписание, история сообщений, настройка бота</li>
           <li id="pricing-4">Техническая поддержка</li>
         </ul>
         <a href="#demo" class="btn-primary" style="width:100%;text-align:center;justify-content:center;" id="pricing-cta">Начать бесплатно →</a>
         <div class="pricing-note" id="pricing-note">Первые 7 дней бесплатно, потом 1 550 ₽/мес. Отмена в любой момент.</div>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-label" id="pricing-pro-label">Pro</div>
+        <div class="pricing-amount text" id="pricing-pro-amount">По договорённости</div>
+        <div class="pricing-period" id="pricing-pro-period">индивидуальный подход</div>
+        <ul class="pricing-includes">
+          <li id="pricing-pro-1">Всё из стартового плана</li>
+          <li id="pricing-pro-2">Безлимитные диалоги</li>
+          <li id="pricing-pro-3">Персональная настройка под ваш бизнес</li>
+          <li id="pricing-pro-4">Приоритетное внедрение новых функций</li>
+          <li id="pricing-pro-5">Выделенная поддержка</li>
+        </ul>
+        <a href="#demo" class="btn-primary" style="width:100%;text-align:center;justify-content:center;background:var(--white);color:var(--black);" id="pricing-pro-cta">Обсудить →</a>
+        <div class="pricing-note" id="pricing-pro-note">Свяжемся, обсудим задачи и предложим подходящие условия.</div>
       </div>
     </div>
   </div>
@@ -1118,8 +1133,18 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label id="lbl-contact">WhatsApp или Telegram</label>
-            <input type="text" id="inp-contact" placeholder="+7 900 000 00 00" required>
+            <label id="lbl-phone">Телефон</label>
+            <input type="tel" id="inp-phone" placeholder="+7 900 000 00 00" required>
+          </div>
+          <div class="form-group">
+            <label id="lbl-telegram">Telegram</label>
+            <input type="text" id="inp-telegram" placeholder="@username">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label id="lbl-email">Почта</label>
+            <input type="email" id="inp-email" placeholder="name@mail.ru">
           </div>
           <div class="form-group">
             <label id="lbl-country">Страна</label>
@@ -1135,7 +1160,7 @@
           </div>
         </div>
         <button type="submit" class="form-submit" id="btn-submit">Оставить заявку →</button>
-        <p class="form-disclaimer" id="form-disc">Перезвоним в течение дня. Никакого спама.</p>
+        <p class="form-disclaimer" id="form-disc">Свяжемся в течение дня. Никакого спама.</p>
       </form>
       <div class="form-success" id="formSuccess">
         <div class="success-icon">✅</div>
@@ -1239,20 +1264,30 @@ const t = {
     'pricing-amount': '1 550 ₽',
     'pricing-period': 'в месяц',
     'pricing-1': 'Боты в Telegram и WhatsApp',
-    'pricing-2': 'До 500 диалогов в месяц',
+    'pricing-2': 'До 100 диалогов в месяц',
     'pricing-3': 'Веб-приложение: расписание, история сообщений, настройка бота',
     'pricing-4': 'Техническая поддержка',
     'pricing-cta': 'Начать бесплатно →',
     'pricing-note': 'Первые 7 дней бесплатно, потом 1 550 ₽/мес. Отмена в любой момент.',
+    'pricing-pro-label': 'Pro',
+    'pricing-pro-amount': 'По договорённости',
+    'pricing-pro-period': 'индивидуальный подход',
+    'pricing-pro-1': 'Всё из стартового плана',
+    'pricing-pro-2': 'Безлимитные диалоги',
+    'pricing-pro-3': 'Персональная настройка под ваш бизнес',
+    'pricing-pro-4': 'Приоритетное внедрение новых функций',
+    'pricing-pro-5': 'Выделенная поддержка',
+    'pricing-pro-cta': 'Обсудить →',
+    'pricing-pro-note': 'Свяжемся, обсудим задачи и предложим подходящие условия.',
     'cta-h': 'Оставьте заявку — покажем, как это работает',
     'cta-p': 'Свяжемся с вами, проведём демонстрацию и ответим на все вопросы. Без обязательств — просто посмотрите, подходит ли вам.',
     'lbl-name': 'Ваше имя', 'lbl-shop': 'Название сервиса',
-    'lbl-contact': 'WhatsApp или Telegram', 'lbl-country': 'Страна',
+    'lbl-phone': 'Телефон', 'lbl-telegram': 'Telegram', 'lbl-email': 'Почта', 'lbl-country': 'Страна',
     'inp-name': {placeholder: 'Александр'}, 'inp-shop': {placeholder: 'Автосервис №1'},
-    'inp-contact': {placeholder: '+7 900 000 00 00'},
+    'inp-phone': {placeholder: '+7 900 000 00 00'}, 'inp-telegram': {placeholder: '@username'}, 'inp-email': {placeholder: 'name@mail.ru'},
     'opt-ru': 'Россия', 'opt-kz': 'Казахстан', 'opt-uz': 'Узбекистан', 'opt-ge': 'Грузия', 'opt-kg': 'Кыргызстан', 'opt-am': 'Армения', 'opt-other': 'Другая страна',
     'btn-submit': 'Оставить заявку →',
-    'form-disc': 'Перезвоним в течение дня. Никакого спама.',
+    'form-disc': 'Свяжемся в течение дня. Никакого спама.',
     'success-h': 'Заявка принята!',
     'success-p': 'Свяжемся с вами в течение дня, чтобы провести демонстрацию и ответить на вопросы.',
   },
@@ -1335,20 +1370,30 @@ const t = {
     'pricing-amount': '$20',
     'pricing-period': 'per month',
     'pricing-1': 'Bots in Telegram and WhatsApp',
-    'pricing-2': 'Up to 500 conversations/month',
+    'pricing-2': 'Up to 100 conversations/month',
     'pricing-3': 'Web app: schedule, message history, bot customization',
     'pricing-4': 'Technical support',
     'pricing-cta': 'Start free →',
     'pricing-note': '7 days free, then $20/month. Cancel anytime.',
+    'pricing-pro-label': 'Pro',
+    'pricing-pro-amount': 'Custom pricing',
+    'pricing-pro-period': 'personalized approach',
+    'pricing-pro-1': 'Everything in Starter',
+    'pricing-pro-2': 'Unlimited conversations',
+    'pricing-pro-3': 'Custom setup for your business',
+    'pricing-pro-4': 'Priority feature development',
+    'pricing-pro-5': 'Dedicated support',
+    'pricing-pro-cta': 'Let\'s talk →',
+    'pricing-pro-note': 'We\'ll discuss your needs and offer the right plan.',
     'cta-h': 'Leave a request — we\'ll show you how it works',
     'cta-p': 'We\'ll get in touch, walk you through a demo, and answer all your questions. No commitment — just see if it\'s right for you.',
     'lbl-name': 'Your name', 'lbl-shop': 'Shop name',
-    'lbl-contact': 'WhatsApp or Telegram', 'lbl-country': 'Country',
+    'lbl-phone': 'Phone', 'lbl-telegram': 'Telegram', 'lbl-email': 'Email', 'lbl-country': 'Country',
     'inp-name': {placeholder: 'Alexander'}, 'inp-shop': {placeholder: 'Auto Shop #1'},
-    'inp-contact': {placeholder: '+1 555 000 0000'},
+    'inp-phone': {placeholder: '+1 555 000 0000'}, 'inp-telegram': {placeholder: '@username'}, 'inp-email': {placeholder: 'name@mail.com'},
     'opt-ru': 'Russia', 'opt-kz': 'Kazakhstan', 'opt-uz': 'Uzbekistan', 'opt-ge': 'Georgia', 'opt-kg': 'Kyrgyzstan', 'opt-am': 'Armenia', 'opt-other': 'Other country',
     'btn-submit': 'Request a demo →',
-    'form-disc': 'We\'ll call you back within the day. No spam.',
+    'form-disc': 'We\'ll get in touch within the day. No spam.',
     'success-h': 'Request received!',
     'success-p': 'We\'ll get in touch within the day to walk you through a demo and answer your questions.',
   }
@@ -1385,7 +1430,9 @@ async function submitForm(e) {
       body: JSON.stringify({
         name: document.getElementById('inp-name').value,
         shop_name: document.getElementById('inp-shop').value,
-        contact: document.getElementById('inp-contact').value,
+        phone: document.getElementById('inp-phone').value,
+        telegram: document.getElementById('inp-telegram').value,
+        email: document.getElementById('inp-email').value,
         country: document.getElementById('inp-country').value,
       }),
     });
