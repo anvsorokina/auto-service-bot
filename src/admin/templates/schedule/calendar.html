@@ -19,9 +19,9 @@
 {% block content %}
 <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;">
     {% for day in days %}
-    <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); {% if day.is_today %}border: 2px solid var(--primary);{% endif %}">
+    <div style="background: var(--gray); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; {% if day.is_today %}border-color: var(--accent);{% endif %}">
         <!-- Day header -->
-        <div style="padding: 0.5rem; background: {% if day.is_today %}var(--primary); color: white;{% else %}var(--gray-50);{% endif %} text-align: center; font-size: 0.85rem;">
+        <div style="padding: 0.5rem; background: {% if day.is_today %}var(--accent); color: var(--black);{% else %}var(--gray2);{% endif %} text-align: center; font-size: 0.85rem; font-family: 'Syne', sans-serif; font-weight: 600;">
             <strong>{{ day.day_name }}</strong><br>
             {{ day.date.strftime('%d.%m') }}
         </div>
@@ -38,7 +38,7 @@
                 <div style="font-size: 0.75rem;">
                     {{ apt.lead.customer_name or 'Клиент' }}
                 </div>
-                <div style="font-size: 0.7rem; color: var(--gray-500);">
+                <div style="font-size: 0.7rem; color: var(--muted);">
                     {{ (apt.lead.device_full_name or '')[:20] }}
                 </div>
                 {% endif %}
@@ -69,7 +69,7 @@
             {% endfor %}
 
             {% if not day.appointments %}
-            <div style="text-align: center; color: var(--gray-300); font-size: 0.8rem; padding: 1rem 0;">
+            <div style="text-align: center; color: var(--gray3); font-size: 0.8rem; padding: 1rem 0;">
                 —
             </div>
             {% endif %}

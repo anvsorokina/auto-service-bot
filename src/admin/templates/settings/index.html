@@ -42,19 +42,19 @@
             <label for="greeting_text">Приветственное сообщение</label>
             <textarea name="greeting_text" id="greeting_text"
                       placeholder="Привет! Я помогу с ремонтом вашего автомобиля...">{{ shop.greeting_text or '' }}</textarea>
-            <small style="color: var(--gray-500);">Оставьте пустым для стандартного приветствия</small>
+            <small style="color: var(--muted);">Оставьте пустым для стандартного приветствия</small>
         </div>
 
         <div class="form-group">
             <label>Стиль общения бота</label>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
                 {% for value, label, desc in personality_options %}
-                <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.75rem; border: 1px solid var(--gray-200); border-radius: 8px; cursor: pointer; flex: 1; min-width: 150px;">
+                <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 8px; cursor: pointer; flex: 1; min-width: 150px;">
                     <input type="radio" name="bot_personality" value="{{ value }}"
                            {% if (shop.bot_personality or 'friendly') == value %}checked{% endif %}>
                     <div>
                         <strong>{{ label }}</strong>
-                        <br><small style="color: var(--gray-500);">{{ desc }}</small>
+                        <br><small style="color: var(--muted);">{{ desc }}</small>
                     </div>
                 </label>
                 {% endfor %}
@@ -65,14 +65,14 @@
             <label for="promo_text">Акции и скидки</label>
             <textarea name="promo_text" id="promo_text"
                       placeholder="Скидка 10% на замену масла до конца месяца!&#10;Бесплатная диагностика при записи через бота.">{{ shop.promo_text or '' }}</textarea>
-            <small style="color: var(--gray-500);">Бот будет упоминать это в разговоре с клиентами</small>
+            <small style="color: var(--muted);">Бот будет упоминать это в разговоре с клиентами</small>
         </div>
 
         <div class="form-group">
             <label for="bot_faq_custom">Кастомные FAQ</label>
             <textarea name="bot_faq_custom" id="bot_faq_custom" style="min-height: 120px;"
                       placeholder="В: Где вы находитесь?&#10;О: Мы на ул. Пушкина, 10, вход со двора.&#10;&#10;В: Делаете ли вы кузовной ремонт?&#10;О: Да, выполняем кузовные работы и покраску.">{{ shop.bot_faq_custom or '' }}</textarea>
-            <small style="color: var(--gray-500);">Формат: В: вопрос / О: ответ. Бот будет использовать эти ответы.</small>
+            <small style="color: var(--muted);">Формат: В: вопрос / О: ответ. Бот будет использовать эти ответы.</small>
         </div>
     </div>
 

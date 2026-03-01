@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Панель управления{% endblock %} — АвтоСервис Бот</title>
-    <link rel="stylesheet" href="/admin/static/pico.min.css">
+    <title>{% block title %}Панель управления{% endblock %} — InGarage AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/admin/static/style.css">
     <script src="/admin/static/htmx.min.js"></script>
 </head>
@@ -13,7 +14,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>🚗 {{ shop.name if shop else 'АвтоСервис' }}</h2>
+                <h2>{{ shop.name if shop else 'InGarage' }} <span class="accent">AI</span></h2>
             </div>
             <nav>
                 <ul>
