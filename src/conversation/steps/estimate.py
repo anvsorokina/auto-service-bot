@@ -9,25 +9,18 @@ class EstimateStep(BaseStep):
     """Show price estimate and route based on customer's text response."""
 
     async def get_initial_message(self, state: SessionState) -> StepResult:
-        """Show price estimate based on collected data. No buttons — pure text."""
-        device = f"{state.collected.device_brand or ''} {state.collected.device_model or ''}".strip()
-        problem = state.collected.problem_description or state.collected.problem_category or "ремонт"
-
+        """Show price estimate if available. LLM already handles the conversation flow."""
         if state.collected.estimated_price_min and state.collected.estimated_price_max:
             price_min = state.collected.estimated_price_min
             price_max = state.collected.estimated_price_max
             text = (
                 f"Ориентировочная стоимость: {price_min:,.0f} – {price_max:,.0f} ₽\n"
-                "Точную цену мастер назовёт после осмотра.\n"
-                "Хотите записаться на приём?"
+                "Точную цену мастер назовёт после осмотра."
             )
-        else:
-            text = (
-                "Точную стоимость назовём после осмотра.\n"
-                "Хотите записаться?"
-            )
+            return StepResult(response_text=text)
 
-        return StepResult(response_text=text)
+        # No price estimate — LLM response is enough, don't append anything
+        return StepResult(response_text="")
 
     async def process(self, user_message: str, state: SessionState) -> StepResult:
         """Handle free text response to estimate using unified LLM.
