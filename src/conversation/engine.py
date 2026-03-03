@@ -844,9 +844,8 @@ class ConversationEngine:
                 status=status,
             )
 
-            # Send notification only when lead is finalized (has contact info)
-            if status == "new":
-                await self._notify_owner(lead, state, device_full_name)
+            # Send notification about the new lead
+            await self._notify_owner(lead, state, device_full_name)
 
         except Exception as e:
             import traceback
@@ -1021,16 +1020,6 @@ class ConversationEngine:
                 customer_name=collected.customer_name,
                 shop_id=state.shop_id,
             )
-
-            # Send notification when lead is finalized (contact info collected)
-            if new_status == "new":
-                device_parts = [collected.device_brand or "", collected.device_model or ""]
-                device_full_name = " ".join(p for p in device_parts if p).strip() or None
-
-                # Fetch lead from DB to get customer_telegram
-                lead_obj = await self.db.get(Lead, uuid.UUID(state.lead_id))
-                if lead_obj:
-                    await self._notify_owner(lead_obj, state, device_full_name)
 
         except Exception as e:
             logger.error(
