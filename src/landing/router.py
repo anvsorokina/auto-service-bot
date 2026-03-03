@@ -77,8 +77,8 @@ async def create_demo_request(
     )
 
     # Send Telegram notification to platform owner via direct HTTP call
-    token = settings.landing_tg_bot_token
-    chat_id = settings.landing_tg_chat_id
+    token = settings.notify_tg_bot_token
+    chat_id = settings.notify_tg_chat_id
 
     if token and chat_id:
         try:

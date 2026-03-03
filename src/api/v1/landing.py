@@ -50,8 +50,8 @@ async def submit_demo_request(body: DemoRequest, request: Request):
         raise HTTPException(status_code=429, detail="Подождите минуту перед повторной отправкой")
     _last_request[ip] = now
 
-    token = settings.landing_tg_bot_token
-    chat_id = settings.landing_tg_chat_id
+    token = settings.notify_tg_bot_token
+    chat_id = settings.notify_tg_chat_id
 
     if not token or not chat_id:
         logger.error(

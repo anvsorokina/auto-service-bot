@@ -26,7 +26,7 @@ uvicorn src.main:app --host 0.0.0.0 --port 8000
 ## Environment Variables
 - `.env` is in `.gitignore` — never commit it
 - Secrets (tokens, API keys) go in `.env` locally and in Railway dashboard for production
-- Key vars: `DATABASE_URL`, `REDIS_URL`, `ANTHROPIC_API_KEY`, `DEMO_NOTIFY_TELEGRAM_BOT_TOKEN`, `DEMO_NOTIFY_TELEGRAM_CHAT_ID`
+- Key vars: `DATABASE_URL`, `REDIS_URL`, `ANTHROPIC_API_KEY`, `NOTIFY_TG_BOT_TOKEN`, `NOTIFY_TG_CHAT_ID`
 
 ## Telegram Notifications
 - Bot token and chat_id are configured in `.env`

@@ -28,6 +28,7 @@ from src.llm.unified import current_shop_config, process_message
 from src.bot.factory import get_or_create_bot
 from src.models.conversation import Conversation, Message
 from src.models.lead import Appointment, Lead
+from src.config import settings
 from src.notifications.telegram import TelegramNotifier
 from src.pricing.engine import PricingEngine
 from src.schemas.conversation import ConversationStep, SessionState
@@ -843,8 +844,9 @@ class ConversationEngine:
                 status=status,
             )
 
-            # Send notification to shop owner
-            await self._notify_owner(lead, state, device_full_name)
+            # Send notification only when lead is finalized (has contact info)
+            if status == "new":
+                await self._notify_owner(lead, state, device_full_name)
 
         except Exception as e:
             import traceback
@@ -868,12 +870,12 @@ class ConversationEngine:
         state: SessionState,
         device_full_name: Optional[str],
     ) -> None:
-        """Send Telegram notification to the shop owner about a new lead."""
-        config = self.shop_config or {}
-        owner_id = config.get("owner_telegram_id")
-        bot_token = config.get("telegram_bot_token")
+        """Send Telegram notification about a new lead via the notification bot."""
+        bot_token = settings.notify_tg_bot_token
+        chat_id = settings.notify_tg_chat_id
 
-        if not owner_id or not bot_token:
+        if not bot_token or not chat_id:
+            logger.warning("notify_bot_not_configured", shop_id=state.shop_id)
             return
 
         try:
@@ -882,6 +884,7 @@ class ConversationEngine:
                 lead_id=str(lead.id),
                 customer_name=collected.customer_name,
                 customer_phone=collected.customer_phone,
+                customer_telegram=lead.customer_telegram,
                 device_full_name=device_full_name,
                 problem_summary=collected.problem_description or collected.problem_category,
                 urgency=collected.urgency,
@@ -893,7 +896,7 @@ class ConversationEngine:
 
             bot = await get_or_create_bot(bot_token)
             notifier = TelegramNotifier()
-            await notifier.send_lead_notification(bot, owner_id, notification)
+            await notifier.send_lead_notification(bot, int(chat_id), notification)
         except Exception as e:
             logger.error("owner_notification_error", error=str(e), shop_id=state.shop_id)
 
@@ -1018,6 +1021,17 @@ class ConversationEngine:
                 customer_name=collected.customer_name,
                 shop_id=state.shop_id,
             )
+
+            # Send notification when lead is finalized (contact info collected)
+            if new_status == "new":
+                device_parts = [collected.device_brand or "", collected.device_model or ""]
+                device_full_name = " ".join(p for p in device_parts if p).strip() or None
+
+                # Fetch lead from DB to get customer_telegram
+                lead_obj = await self.db.get(Lead, uuid.UUID(state.lead_id))
+                if lead_obj:
+                    await self._notify_owner(lead_obj, state, device_full_name)
+
         except Exception as e:
             logger.error(
                 "update_lead_status_error",
