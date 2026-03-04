@@ -12,6 +12,12 @@ import structlog
 from src.config import settings
 from src.llm.client import get_llm_client
 from src.llm.prompts.unified_prompt import build_unified_prompt
+from src.llm.safety import (
+    INJECTION_RESPONSE,
+    SYSTEM_PROMPT,
+    detect_injection,
+    detect_suspicious,
+)
 
 logger = structlog.get_logger()
 
@@ -67,6 +73,20 @@ async def process_message(
     Returns:
         UnifiedLLMResult with intent, parsed data, response text, etc.
     """
+    # ── Safety: prompt injection filter (runs BEFORE LLM call) ──
+    injection = detect_injection(user_message)
+    if injection:
+        return UnifiedLLMResult(
+            intent="off_topic",
+            parsed_data={},
+            response_text=INJECTION_RESPONSE,
+            should_advance=False,
+            confidence="high",
+        )
+
+    # Log suspicious but don't block
+    detect_suspicious(user_message)
+
     client = get_llm_client()
 
     # Use explicit shop_config, or fall back to ContextVar set by engine
@@ -84,6 +104,7 @@ async def process_message(
         response = await client.messages.create(
             model=settings.llm_model,
             max_tokens=400,
+            system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": prompt}],
         )
         text = response.content[0].text.strip()
