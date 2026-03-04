@@ -813,9 +813,13 @@ class BuildConversationEngine:
         device_full_name: Optional[str],
         service_label: Optional[str] = None,
     ) -> None:
-        """Send Telegram notification about a new construction lead."""
-        bot_token = settings.notify_tg_bot_token
-        chat_id = settings.notify_tg_chat_id
+        """Send Telegram notification about a new construction lead.
+
+        Uses InBuild-specific notification bot (@BuildMate_admin_bot)
+        with fallback to the shared notification bot.
+        """
+        bot_token = settings.inbuild_notify_bot_token or settings.notify_tg_bot_token
+        chat_id = settings.inbuild_notify_chat_id or settings.notify_tg_chat_id
 
         if not bot_token or not chat_id:
             logger.warning("build_notify_bot_not_configured", shop_id=state.shop_id)

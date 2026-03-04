@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     notify_tg_bot_token: str = ""
     notify_tg_chat_id: str = ""
 
+    # InBuild — @BuildMate_bot (client-facing) + @BuildMate_admin_bot (notifications)
+    inbuild_bot_token: str = ""
+    inbuild_notify_bot_token: str = ""
+    inbuild_notify_chat_id: str = ""
+
     # Session
     session_ttl_seconds: int = 7200  # 2 hours
 
