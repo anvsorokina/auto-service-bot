@@ -1,12 +1,14 @@
-"""Main message handler — routes all incoming messages through ConversationEngine."""
+"""Main message handler — routes all incoming messages through ConversationEngine.
+
+Supports any engine that implements handle_message/handle_callback
+(auto-repair ConversationEngine, construction BuildConversationEngine, etc.)
+"""
 
 import structlog
 from aiogram import Bot
 from aiogram.types import Message, CallbackQuery
-from typing import Optional
+from typing import Any, Optional, Protocol
 
-from src.conversation.engine import ConversationEngine
-from src.conversation.steps.base import StepResult
 from src.redis_client import get_redis
 
 logger = structlog.get_logger()
@@ -22,6 +24,26 @@ DAILY_LIMIT_TEXT = (
     "К сожалению, сейчас бот перегружен. "
     "Попробуйте позже или запишитесь на демо — мы покажем всё лично!"
 )
+
+
+class EngineProtocol(Protocol):
+    """Protocol for any conversation engine (auto-repair, construction, etc.)."""
+
+    async def handle_message(
+        self,
+        shop_id: str,
+        user_id: str,
+        message_text: str,
+        user_telegram_username: Optional[str] = None,
+        channel: str = "telegram",
+    ) -> Any: ...
+
+    async def handle_callback(
+        self,
+        shop_id: str,
+        user_id: str,
+        callback_data: str,
+    ) -> Any: ...
 
 
 async def _check_daily_new_users_limit(user_id: str, owner_telegram_id: Optional[int]) -> bool:
@@ -111,7 +133,7 @@ async def _increment_demo_count(user_id: str, owner_telegram_id: Optional[int]) 
 async def handle_message(
     message: Message,
     bot: Bot,
-    engine: ConversationEngine,
+    engine: EngineProtocol,
     shop_id: str,
     shop_config: Optional[dict] = None,
 ) -> None:
@@ -120,7 +142,7 @@ async def handle_message(
     Args:
         message: Telegram message object
         bot: Bot instance for the shop
-        engine: ConversationEngine instance
+        engine: Any conversation engine (ConversationEngine or BuildConversationEngine)
         shop_id: UUID of the shop
         shop_config: Shop configuration dict (includes owner_telegram_id)
     """
@@ -154,7 +176,7 @@ async def handle_message(
             return
 
     try:
-        result: StepResult = await engine.handle_message(
+        result = await engine.handle_message(
             shop_id=shop_id,
             user_id=user_id,
             message_text=message.text,
@@ -188,7 +210,7 @@ async def handle_message(
 async def handle_callback(
     callback: CallbackQuery,
     bot: Bot,
-    engine: ConversationEngine,
+    engine: EngineProtocol,
     shop_id: str,
     shop_config: Optional[dict] = None,
 ) -> None:
@@ -197,7 +219,7 @@ async def handle_callback(
     Args:
         callback: Telegram callback query
         bot: Bot instance
-        engine: ConversationEngine instance
+        engine: Any conversation engine (ConversationEngine or BuildConversationEngine)
         shop_id: UUID of the shop
         shop_config: Shop configuration dict (includes owner_telegram_id)
     """
@@ -232,7 +254,7 @@ async def handle_callback(
     )
 
     try:
-        result: StepResult = await engine.handle_callback(
+        result = await engine.handle_callback(
             shop_id=shop_id,
             user_id=user_id,
             callback_data=callback.data,
@@ -258,8 +280,11 @@ async def handle_callback(
         await _send_result(callback.message, result)
 
 
-async def _send_result(message: Message, result: StepResult) -> None:
-    """Send StepResult as a Telegram message.
+async def _send_result(message: Message, result: Any) -> None:
+    """Send StepResult/BuildStepResult as a Telegram message.
+
+    Both StepResult and BuildStepResult have the same interface:
+    .response_text (str) and .keyboard (Optional[InlineKeyboardMarkup]).
 
     If response_text is empty (e.g. conversation is in human mode),
     no message is sent — the master will respond directly.

@@ -62,6 +62,9 @@ class Shop(Base, UUIDMixin, TimestampMixin):
     address: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     maps_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
 
+    # Product type — determines which conversation engine to use
+    product_type: Mapped[str] = mapped_column(String(30), default="auto_repair")
+
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships — lazy="noload" to avoid pulling all data on every shop query.

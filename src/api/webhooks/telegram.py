@@ -61,7 +61,6 @@ async def telegram_webhook(
 
     # 4. Create engine with shop settings for LLM personalization
     redis = await get_redis()
-    session_manager = SessionManager(redis)
 
     shop_config = {
         "bot_personality": getattr(shop, "bot_personality", None) or "friendly",
@@ -75,7 +74,10 @@ async def telegram_webhook(
         "telegram_bot_token": shop_token,
     }
 
-    engine = ConversationEngine(session_manager, shop_config=shop_config, db=db)
+    # Route to the correct engine based on shop.product_type
+    product_type = getattr(shop, "product_type", "auto_repair") or "auto_repair"
+
+    engine = _create_engine(product_type, redis, shop_config, db)
 
     # 5. Route to handler
     shop_id = str(shop.id)
@@ -98,3 +100,17 @@ async def telegram_webhook(
         )
 
     return {"ok": True}
+
+
+def _create_engine(product_type: str, redis, shop_config: dict, db):
+    """Create the appropriate conversation engine for the shop's product type."""
+    if product_type == "inbuild":
+        from src.products.inbuild.engine import BuildConversationEngine
+        from src.products.inbuild.schemas import BuildSessionState
+
+        session_manager = SessionManager(redis, state_model=BuildSessionState)
+        return BuildConversationEngine(session_manager, shop_config=shop_config, db=db)
+    else:
+        # Default: auto_repair
+        session_manager = SessionManager(redis)
+        return ConversationEngine(session_manager, shop_config=shop_config, db=db)
