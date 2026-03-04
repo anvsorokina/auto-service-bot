@@ -1,5 +1,7 @@
 """Telegram webhook endpoint — receives updates from Telegram Bot API."""
 
+from typing import Optional
+
 import structlog
 from aiogram import Bot
 from aiogram.types import Update
@@ -79,7 +81,16 @@ async def telegram_webhook(
 
     engine = _create_engine(product_type, redis, shop_config, db)
 
-    # 5. Route to handler
+    # 5. Owner-only restriction: if shop.plan == "free", only the owner can use the bot
+    #    This is a dev/testing restriction — remove when opening to public
+    user_id = _extract_user_id(update)
+    owner_id = getattr(shop, "owner_telegram_id", None)
+    if owner_id and user_id and user_id != owner_id:
+        logger.info("webhook_blocked_non_owner", user_id=user_id, owner_id=owner_id)
+        # Silently ignore — don't even respond
+        return {"ok": True}
+
+    # 6. Route to handler
     shop_id = str(shop.id)
 
     if update.message:
@@ -100,6 +111,15 @@ async def telegram_webhook(
         )
 
     return {"ok": True}
+
+
+def _extract_user_id(update: Update) -> Optional[int]:
+    """Extract Telegram user ID from any update type."""
+    if update.message and update.message.from_user:
+        return update.message.from_user.id
+    if update.callback_query and update.callback_query.from_user:
+        return update.callback_query.from_user.id
+    return None
 
 
 def _create_engine(product_type: str, redis, shop_config: dict, db):
